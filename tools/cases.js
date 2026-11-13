@@ -26,7 +26,7 @@ const results = [];
 
   await fresh();
   await test('01 시작: 로고 후 정비 지도로 자동 이동(2초 안)', async () => (await route()) === 'home');
-  await test('02 주차 중 정비 지도에 점검 필요 카드 표시', async () => (await text()).includes('점검'));
+  await test('02 주차 중 정비 지도에 손볼 곳 카드 표시', async () => (await text()).includes('손볼 곳'));
   await test('03 P→D: 주행 화면으로 바뀜', async () => { await D(42); await wait(250); return (await route()) === 'drive' && (await text()).includes('42'); });
   await test('04 주행 중 속도 변화가 바로 반영', async () => { await ev(() => PS.onVehicle({ speed: 88 }, 'demo')); return (await ev(() => $('#spd').textContent)) === '88'; });
   await test('05 주행 중에는 부품 찾기·주문 화면이 열리지 않음', async () => { const t = await text(); return !t.includes('주문하기') && !(await has('#q')); });
@@ -52,11 +52,11 @@ const results = [];
   await test('20 주차 중 말한 검색어가 출발 뒤 도착하면 무시', async () => { await ev(() => { go({ name: 'home' }); UI.listening = true; UI.listenFrom = 'home'; UI.onSpeech = t => go({ name: 'search', q: t }); }); await D(20); await ev(() => PS.onSpeech('와이퍼')); const r = await route(); await P(); return r === 'drive'; });
   await test('21 장바구니 비었을 때 주문 창 안 열림', async () => { await ev(() => { S.cart = {}; go({ name: 'home' }); openOrder(); }); return !(await has('#modal')); });
   await test('22 부품 담기 → 주문 → 결제(시연) → 완료', async () => {
-    await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진 윤활', grp: '오일 교환' })); await p.click('#order'); await p.click('#opaid');
+    await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진오일', grp: '오일 교환' })); await p.click('#order'); await p.click('#opaid');
     return ev(() => !!S.order && cartCount() === 0 && document.getElementById('stage').innerText.includes('주문 완료'));
   });
   await test('23 주문 창이 열린 채 출발하면 창이 닫히고 주행 화면', async () => { await ev(() => { S.cart = { [PARTS[0].id]: 1 }; openOrder(); }); await D(15); const r = await route(), m = await has('#modal'); await P(); return r === 'drive' && !m; });
-  await test('24 수량 줄이기 0 아래로 안 내려감', async () => { await ev(() => { S.cart = {}; go({ name: 'sys', zone: 'en', sys: '엔진 윤활', grp: '오일 교환' }); }); const id = await ev(() => document.querySelector('[data-dec]').dataset.dec); for (let i = 0; i < 8; i++) await p.click(`[data-dec="${id}"]`); return ev(i => (S.cart[i] || 0) === 0, id); });
+  await test('24 수량 줄이기 0 아래로 안 내려감', async () => { await ev(() => { S.cart = {}; go({ name: 'sys', zone: 'en', sys: '엔진오일', grp: '오일 교환' }); }); const id = await ev(() => document.querySelector('[data-dec]').dataset.dec); for (let i = 0; i < 8; i++) await p.click(`[data-dec="${id}"]`); return ev(i => (S.cart[i] || 0) === 0, id); });
   await test('25 주행 중 증상 기록: 속도·기어·브레이크 상태 저장', async () => {
     await D(37); await ev(() => { PS.onVehicle({ brake: true }, 'demo'); PS.onVehicle({ brake: false }, 'demo'); });
     const n0 = await ev(() => S.sym.length); await ev(() => recordSymptom('방금 소리 났어')); await wait(150);
@@ -98,7 +98,7 @@ const results = [];
     return { ok: r.length === 0, note: r.length + '개 ' + r.join(', ') };
   });
   await test('39 화면 전환 시간(정비 지도→구역→부품)', async () => {
-    const t = await ev(() => { const a = performance.now(); go({ name: 'zone', zone: 'en' }); go({ name: 'sys', zone: 'en', sys: '엔진 윤활', grp: '오일 교환' }); go({ name: 'home' }); return (performance.now() - a) / 3; });
+    const t = await ev(() => { const a = performance.now(); go({ name: 'zone', zone: 'en' }); go({ name: 'sys', zone: 'en', sys: '엔진오일', grp: '오일 교환' }); go({ name: 'home' }); return (performance.now() - a) / 3; });
     return { ok: t < 100, note: `평균 ${t.toFixed(1)}ms` };
   });
   await test('40 실제 한글 조합 입력(깜빡이)이 깨지지 않음', async () => {
@@ -122,13 +122,13 @@ const results = [];
     await p.click('.a-panel [data-bh]'); await wait(250); const sheet = await text(); await shot('fb_bluehands_sheet');
     const fit = await ev(() => { const r = document.querySelector('#modal .sheet').getBoundingClientRect(); return r.top >= 0 && r.bottom <= 720; });
     await p.click('#bhok'); await wait(300); const v = await ev(() => S.visit); await shot('fb_bluehands_booked');
-    return { ok: sheet.includes('가까운 블루핸즈') && sheet.includes('예시') && fit && v && /블루핸즈/.test(v.shop) && v.slot === '지금 입고 가능', note: v && v.shop };
+    return { ok: sheet.includes('가까운 블루핸즈') && sheet.includes('예시') && fit && v && /블루핸즈/.test(v.shop) && v.slot === '지금 바로 가능', note: v && v.shop };
   });
   await test('43 블루핸즈 도착 → 정비 요청서 → 출발하면 이력 저장', async () => {
     await D(30); await wait(200); await ev(() => PS.onWaypointArrived(S.visit.shop)); await P(); await wait(300);
     const w = await text(), r1 = await route(); await shot('fb_bluehands_work');
     const n0 = await ev(() => S.hist.length); await D(20); await wait(500); const h = await ev(() => S.hist[0]);
-    return { ok: r1 === 'work' && w.includes('브레이크액 부족 점검') && w.includes('예약 지금 입고 가능') && (await ev(() => S.hist.length)) === n0 + 1 && /블루핸즈/.test(h.title), note: h.title };
+    return { ok: r1 === 'work' && w.includes('브레이크액 부족 점검') && w.includes('예약 지금 바로 가능') && (await ev(() => S.hist.length)) === n0 + 1 && /블루핸즈/.test(h.title), note: h.title };
   });
   await test('44 워셔액 경고에는 블루핸즈 버튼 없음, 카드 아래 버튼은 1개만', async () => {
     await fresh(); await ev(() => PS.onVehicle({ warn: { washer: true } }, 'demo')); await wait(200); const n1 = await ev(() => document.querySelectorAll('[data-bh]').length);
@@ -160,7 +160,7 @@ const results = [];
     return { ok: t1.includes('보험사 긴급출동') && t1.includes('예시') && fit1 && t2.includes('예약 내역 가져가기') && q.fit && q.svg && gone, note: '주행 시작하면 창 닫힘 ' + gone };
   });
   await test('48 품번 목록 보내기 → 품번이 담긴 QR', async () => {
-    await fresh(); await ev(() => { S.cart = { engine_oil: 5, oil_filter: 1 }; go({ name: 'sys', zone: 'en', sys: '엔진 윤활', grp: '오일 교환' }); }); await wait(250);
+    await fresh(); await ev(() => { S.cart = { engine_oil: 5, oil_filter: 1 }; go({ name: 'sys', zone: 'en', sys: '엔진오일', grp: '오일 교환' }); }); await wait(250);
     await p.click('#sendpn'); await wait(250); const t = await text(); await shot('fb_partno_qr');
     await (await p.$('#pqr')).screenshot({ path: `${out}/qr_parts.png` });
     const no = await ev(() => partById('oil_filter').no); await p.click('#pqx');
@@ -200,7 +200,7 @@ const results = [];
   await test('54 뒤로: 검색→부품 그림→뒤로=검색, 다시 뒤로=내 차 / 구역→뒤로=내 차', async () => {
     await ev(() => go({ name: 'search', q: '미러' })); await wait(200); await p.click('[data-go="sys"]'); await wait(300); const a = await route();
     await p.click('#back'); await wait(200); const b1 = await ev(() => UI.route.name + ':' + UI.route.q); await p.click('#back'); await wait(200); const c = await route();
-    await ev(() => go({ name: 'zone', zone: 'en' })); await wait(200); await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진 윤활' })); await wait(200); await p.click('#back'); await wait(200); const d = await ev(() => UI.route.name + ':' + UI.route.zone);
+    await ev(() => go({ name: 'zone', zone: 'en' })); await wait(200); await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진오일' })); await wait(200); await p.click('#back'); await wait(200); const d = await ev(() => UI.route.name + ':' + UI.route.zone);
     await p.click('#back'); await wait(200); const e = await route();
     return { ok: a === 'sys' && b1 === 'search:미러' && c === 'home' && d === 'zone:en' && e === 'home', note: [a, b1, c, d, e].join(' ') };
   });
@@ -230,7 +230,7 @@ const results = [];
     return { ok: names.length === 3 && tm.includes('미션') && sel === 'roll_rod' && c === '1,1,1' && small === 0, note: `${names.join('/')} 작은 버튼 ${small}` };
   });
   await test('60 주문 뒤 첫 화면에 진행 중 카드와 부품 주문함 표시, 장바구니는 비워짐', async () => {
-    await fresh(); await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진 윤활' })); await wait(200); await p.click('#order'); await wait(200); await p.click('#opaid'); await wait(200); await p.click('#onow'); await wait(200);
+    await fresh(); await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진오일' })); await wait(200); await p.click('#order'); await wait(200); await p.click('#opaid'); await wait(200); await p.click('#onow'); await wait(200);
     const cart = await ev(() => cartCount()); await ev(() => go({ name: 'home' })); await wait(200); const t = await text();
     await p.click('#ordway'); await wait(200); const v = await ev(() => !!S.visit); const t2 = await text();
     await p.click('#ordview'); await wait(200); const t3 = await text();

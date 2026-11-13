@@ -13,7 +13,7 @@ const url = 'file://' + web + '/index.html';
   // 1) 주문: 부품 그림 화면에서 주문 완료까지 누른 횟수·걸린 화면 수·시간
   for (const v of ['A', 'B']) {
     const p = await page({ order: v }); let taps = 0, sheets = 0;
-    await p.evaluate(() => go({ name: 'sys', zone: 'en', sys: '엔진 윤활', grp: '오일 교환' }));
+    await p.evaluate(() => go({ name: 'sys', zone: 'en', sys: '엔진오일', grp: '오일 교환' }));
     const t0 = Date.now();
     await p.click('#order'); taps++; sheets++;
     if (await p.$('#onext')) { await p.click('#onext'); taps++; sheets++; }

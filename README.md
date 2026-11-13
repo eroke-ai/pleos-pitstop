@@ -19,6 +19,7 @@
 | `tools/ab2.js` | 이전 첫 화면 대 투시 렌즈 첫 화면 자동 측정 (결과: `docs/ab-test-2.md`) |
 | `tools/persona2.js` | Pleos Connect 적용 차종(그랜저·아반떼·투싼)별 운전자 조건 A/B 자동 측정 (결과: `docs/ab-test-3-vehicle-personas.md`, 실제 사용자 실험 아님) |
 | `tools/persona.js` | 사용자 유형 5가지 조건별 기존안·개선안 자동 측정 (결과: `docs/persona-test.md`, 실제 사용자 실험 아님) |
+| `tools/render3d/` | 엔진·부품 3D 모델(three.js 0.160)과 Blender(bpy) 렌더 스크립트 |
 | `docs/design-decisions.md` | 개발 전 조사와 화면 설계 결정 |
 
 ## 쓰는 차량 신호

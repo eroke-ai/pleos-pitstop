@@ -13,3 +13,4 @@ side_xray2.webp    1880 x 1030 (측면 투시, 고해상도)
 xray_zoom2.webp    2128 x 1444 (확대 투시, 고해상도)
 
 저장소에 들어 있는 이미지: engine_x.webp(1800x1280), parts.webp(2000x1200)
+engine_r·engine_plug·engine_mount·p/*.webp 는 tools/render3d 의 장면을 Blender Cycles로 직접 렌더한 그림(사진·타사 자료 아님)

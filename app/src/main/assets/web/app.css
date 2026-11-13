@@ -299,3 +299,21 @@ button:active{filter:brightness(1.25)}.a-btn:active,.btn:active,.tab:active,.a-r
 .pr{padding:3px 12px;margin-bottom:4px}.ex{padding:4px 14px 4px;margin-bottom:4px}
 /* 작은 화면(0.8배)에서도 12px 아래로 내려가지 않게: 가장 작은 글자 15px */
 .pk,.tagz,.ok,.tag,.grp span,.sys span{font-size:15px}
+
+/* 실제 엔진 그림 위에 표시하는 기통·마운트 */
+.tv.r{top:150px;left:240px}
+.tvi{position:relative;width:620px;height:386px}
+.tvi>img{position:absolute;left:0;top:0;width:620px;height:386px;filter:drop-shadow(0 18px 26px rgba(0,0,0,.55))}
+.tvi>svg{position:absolute;left:0;top:0;width:620px;height:386px}
+.tvl{position:absolute;font-size:16px;font-weight:700;white-space:nowrap;text-shadow:0 1px 4px #000}
+.tv.r .tvn{margin-top:4px}.tv.r .tva{margin-top:8px}
+.tvi.cut>img{-webkit-mask-image:linear-gradient(#000 82%,transparent 99%);mask-image:linear-gradient(#000 82%,transparent 99%)}
+
+/* 부품 그림 */
+.a-lens.art img{opacity:.22}
+.pshot{position:absolute;left:716px;top:92px;width:210px;padding:8px 8px 10px;border-radius:18px;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.10),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.12);text-align:center;z-index:3}
+.pshot img{width:176px;height:176px;display:block;margin:0 auto;filter:drop-shadow(0 10px 14px rgba(0,0,0,.55))}
+.pshot span{font-size:15px;color:#b8c6d4;word-break:keep-all}
+.res{display:flex;align-items:center;gap:10px;text-align:left}.res .rtx{flex:1;min-width:0}
+.rth{width:54px;height:54px;flex:none;border-radius:12px;background:rgba(255,255,255,.05);object-fit:contain}
+.hs.lf{flex-direction:row-reverse;transform:translate(calc(-100% + 12px),-12px)}

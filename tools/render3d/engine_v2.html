@@ -1,0 +1,97 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style></head><body>
+<script type="importmap">{"imports":{"three":"./three.module.js"}}</script>
+<script type="module">
+import { GLTFExporter } from "./node_modules/three/examples/jsm/exporters/GLTFExporter.js";
+import * as THREE from './three.module.js';
+import { RoomEnvironment } from './RoomEnvironment.js';
+import * as L from './partlib.js';
+const W=900,H=640;
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+r.setPixelRatio(2);r.setSize(W,H);r.setClearColor(0,0);
+r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.15;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.outputColorSpace=THREE.SRGBColorSpace;
+document.body.appendChild(r.domElement);
+const sc=new THREE.Scene();
+const pm=new THREE.PMREMGenerator(r);sc.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;
+const cam=new THREE.PerspectiveCamera(27.5,W/H,0.1,100);cam.position.set(6.6,2.9,7.6);cam.lookAt(0.75,0.1,0.0);
+const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(4,8,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-3;key.shadow.camera.right=3;key.shadow.camera.top=3;key.shadow.camera.bottom=-3;key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);sc.add(new THREE.HemisphereLight(0xbfd8ff,0x1a1410,0.55));
+const rim=new THREE.DirectionalLight(0x9fe8ff,1.6);rim.position.set(-6,3,-5);sc.add(rim);
+const warm=new THREE.PointLight(0xffa860,5,10);warm.position.set(3,1,4);sc.add(warm);
+// ---- 실제 형태의 직렬 4기통 엔진 ----
+const M=(o)=>new THREE.MeshStandardMaterial(o);
+const castAl=M({color:0xa9afb6,metalness:.9,roughness:.48});
+const machAl=M({color:0xcfd4da,metalness:1,roughness:.28});
+const blackPl=M({color:0x16181c,metalness:.1,roughness:.55});
+const blackPl2=new THREE.MeshPhysicalMaterial({color:0x1b1e23,roughness:.42,clearcoat:.35,clearcoatRoughness:.5});
+const panM=M({color:0x4a4f57,metalness:.55,roughness:.5});const fill=new THREE.PointLight(0xcfe6ff,7,8);fill.position.set(2.5,-2.2,3.5);sc.add(fill);
+const shield=M({color:0xb3b0aa,metalness:1,roughness:.42});
+const rubber=M({color:0x0b0b0c,metalness:0,roughness:.92});
+const steelD=M({color:0x8b9198,metalness:1,roughness:.35});
+const yellow=M({color:0xf2b705,roughness:.45});
+const eng=new THREE.Group();sc.add(eng);
+function A(geo,mat,pos,rot){const m=new THREE.Mesh(geo,mat);m.position.set(...pos);if(rot)m.rotation.set(...rot);m.castShadow=true;m.receiveShadow=true;eng.add(m);return m}
+const RB=(w,h,d,r,bv=.03)=>{const s=new THREE.Shape();const x=-w/2,y=-d/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+d-r);s.quadraticCurveTo(x+w,y+d,x+w-r,y+d);s.lineTo(x+r,y+d);s.quadraticCurveTo(x,y+d,x,y+d-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);
+ const g=new THREE.ExtrudeGeometry(s,{depth:h,bevelEnabled:true,bevelSize:bv,bevelThickness:bv,bevelSegments:3,curveSegments:10});g.rotateX(-Math.PI/2);g.translate(0,-h/2,0);return g};
+const CY=(r1,r2,h,n=40)=>new THREE.CylinderGeometry(r1,r2,h,n);
+const bolt=(p,rot,s=1)=>{A(CY(.032*s,.032*s,.03,6),machAl,p,rot)};
+// 블록
+A(RB(0.9,1.0,1.9,.06),castAl,[0,0,0]);
+for(let i=0;i<5;i++){A(RB(.03,.78,.05,.01,.005),castAl,[0.47,-0.02,-0.8+i*0.4]);A(RB(.03,.78,.05,.01,.005),castAl,[-0.47,-0.02,-0.8+i*0.4])} // 보강 리브
+for(let i=0;i<3;i++)A(RB(.025,.04,1.7,.01,.004),castAl,[0.47,0.3-i*0.3,0]);
+A(RB(0.96,0.05,1.94,.03,.008),machAl,[0,0.5,0]);   // 헤드 가스켓 면
+// 실린더 헤드
+A(RB(0.88,0.32,1.88,.05),castAl,[0,0.68,0]);
+for(const z of[-0.63,-0.21,0.21,0.63]){A(RB(.12,.16,.26,.03,.01),castAl,[0.47,0.66,z]);A(RB(.14,.16,.28,.03,.01),castAl,[-0.47,0.7,z])} // 배기·흡기 포트 플랜지
+// 헤드 커버(검정 수지) + 볼트
+A(RB(0.78,0.16,1.78,.12,.04),blackPl2,[0,0.93,0]);
+A(RB(0.5,0.07,1.5,.1,.03),blackPl2,[-0.06,1.03,0]);
+for(const z of[-0.82,-0.42,0,0.42,0.82]){bolt([0.34,1.02,z]);bolt([-0.34,1.02,z])}
+// 점화 코일 4개(코일 몸통 + 커넥터)
+for(const z of[-0.63,-0.21,0.21,0.63]){A(CY(.075,.075,.1,24),blackPl,[-0.08,1.11,z]);A(RB(.22,.06,.15,.03,.012),blackPl,[-0.08,1.18,z]);A(RB(.09,.05,.1,.015,.008),M({color:0x6a7078,roughness:.6}),[0.07,1.19,z]);bolt([-0.19,1.215,z],null,.8)}
+// 오일 주입구 캡(검정 + 노란 표시)
+A(CY(.115,.115,.04,36),blackPl2,[0.2,1.045,0.05]);A(CY(.1,.105,.07,36),blackPl,[0.2,1.09,0.05]);
+A(new THREE.TorusGeometry(.1,.012,10,40),yellow,[0.2,1.126,0.05],[Math.PI/2,0,0]);A(RB(.15,.02,.035,.01,.004),yellow,[0.2,1.135,0.05]);
+// 오일 팬(위는 주물, 아래는 검정 강판) + 볼트 + 드레인 자리
+A(RB(1.0,0.2,1.86,.08),castAl,[0,-0.62,0]);
+A(RB(0.92,0.2,1.72,.12),panM,[0,-0.8,0]);
+A(RB(0.72,0.24,1.0,.14),panM,[0.05,-0.99,0.25]);
+for(let i=0;i<7;i++){bolt([0.5,-0.7,-0.78+i*0.26],[0,0,Math.PI/2],.8)}
+A(CY(.07,.07,.03,24),machAl,[0.1,-1.125,0.4]);
+// 오일 필터가 붙는 자리(가공면 + 나사)
+A(CY(.16,.17,.1,36),castAl,[0.5,-0.32,0.42],[0,0,Math.PI/2]);A(CY(.13,.13,.02,36),machAl,[0.56,-0.32,0.42],[0,0,Math.PI/2]);A(CY(.045,.045,.09,20),steelD,[0.6,-0.32,0.42],[0,0,Math.PI/2]);
+// 배기 매니폴드 방열판 + 촉매
+{const s=new THREE.Shape();s.moveTo(0,0.6);s.quadraticCurveTo(0.26,0.58,0.3,0.34);s.lineTo(0.3,0.12);s.lineTo(0.04,0.12);s.lineTo(0,0.3);const g=new THREE.ExtrudeGeometry(s,{depth:1.5,bevelEnabled:true,bevelSize:.03,bevelThickness:.03,bevelSegments:3});g.translate(0.46,0.02,-0.75);const m=new THREE.Mesh(g,shield);m.castShadow=m.receiveShadow=true;eng.add(m);
+ for(const z of[-0.5,0,0.5]){A(RB(.02,.3,.05,.008,.004),shield,[0.775,0.36,z]);} for(const z of[-0.6,0.6]){bolt([0.76,0.48,z],[0,0,Math.PI/2]);bolt([0.79,0.2,z],[0,0,Math.PI/2])}}
+A(CY(.15,.14,.5,32),shield,[0.64,-0.16,-0.68]);
+// 흡기 매니폴드(검정 수지 러너 4개 + 서지 탱크) + 스로틀 보디
+A(new THREE.CapsuleGeometry(.17,1.4,8,24),blackPl2,[-0.84,0.4,0],[Math.PI/2,0,0]);
+for(const z of[-0.63,-0.21,0.21,0.63]){const c=new THREE.CatmullRomCurve3([new THREE.Vector3(-0.47,0.7,z),new THREE.Vector3(-0.72,0.9,z),new THREE.Vector3(-1.02,0.66,z),new THREE.Vector3(-0.92,0.38,z)]);const m=new THREE.Mesh(new THREE.TubeGeometry(c,32,.085,16),blackPl2);m.castShadow=m.receiveShadow=true;eng.add(m)}
+A(CY(.13,.13,.22,28),machAl,[-0.78,0.46,0.98],[Math.PI/2,0,0]);A(CY(.15,.15,.05,28),castAl,[-0.78,0.46,0.86],[Math.PI/2,0,0]);
+// 타이밍 커버(앞면)
+A(RB(0.86,1.5,0.08,.06,.02),castAl,[0,0.14,0.97]);
+// 보기류: 크랭크 풀리, 발전기, 에어컨 컴프레서, 텐셔너, 워터 펌프
+const pul=(x,y,r,mat=steelD,w=.1)=>{A(CY(r,r,w,48),mat,[x,y,1.08],[Math.PI/2,0,0]);A(CY(r*.45,r*.45,w+.02,32),machAl,[x,y,1.085],[Math.PI/2,0,0]);for(let k=0;k<3;k++)A(new THREE.TorusGeometry(r-.012-k*.022,.006,6,48),M({color:0x2a2d31,metalness:.8,roughness:.5}),[x,y,1.131],null)};
+pul(0.08,-0.5,.22,M({color:0x3a3d42,metalness:.9,roughness:.4}));pul(0.35,0.32,.13);pul(-0.27,0.06,.13);pul(0.42,-0.15,.09);pul(-0.3,-0.42,.15);
+A(CY(.19,.19,.3,32),castAl,[0.35,0.32,0.86],[Math.PI/2,0,0]);for(let k=0;k<10;k++){const a=k/10*Math.PI*2;A(RB(.02,.24,.03,.006,.003),M({color:0x2b2e33,metalness:.6,roughness:.6}),[0.35+Math.cos(a)*.19,0.32+Math.sin(a)*.19,0.86],[Math.PI/2,0,0])} // 발전기
+A(CY(.17,.17,.34,32),castAl,[-0.3,-0.42,0.84],[Math.PI/2,0,0]); // 컴프레서
+const belt=new THREE.CatmullRomCurve3([new THREE.Vector3(0.08,-0.74,1.08),new THREE.Vector3(0.32,-0.56,1.08),new THREE.Vector3(0.52,-0.18,1.08),new THREE.Vector3(0.49,0.36,1.08),new THREE.Vector3(0.3,0.46,1.08),new THREE.Vector3(-0.05,0.2,1.08),new THREE.Vector3(-0.3,0.2,1.08),new THREE.Vector3(-0.42,0.02,1.08),new THREE.Vector3(-0.46,-0.4,1.08),new THREE.Vector3(-0.32,-0.58,1.08),new THREE.Vector3(-0.1,-0.66,1.08)],true,'catmullrom',.3);
+{const g=new THREE.TubeGeometry(belt,160,.02,6,true);g.scale(1,1,2.2);g.translate(0,0,-1.08*1.2);const m=new THREE.Mesh(g,rubber);m.castShadow=true;eng.add(m)}
+// 변속기 쪽(뒤)
+A(CY(.62,.5,.36,48),castAl,[0.0,-0.22,-1.14],[Math.PI/2,0,0]);A(RB(0.8,0.7,0.5,.16),castAl,[-0.05,-0.32,-1.52]);
+for(let k=0;k<8;k++){const a=k/8*Math.PI*2;bolt([Math.cos(a)*.58,-0.22+Math.sin(a)*.58,-0.95],[Math.PI/2,0,0])}
+// 오일 게이지(노란 손잡이)
+A(CY(.016,.016,1.15,8),steelD,[-0.5,0.3,0.78],[0,0,0.22]);A(new THREE.TorusGeometry(.06,.018,10,24),yellow,[-0.64,0.9,0.78],[0,Math.PI/2,0]);
+// 냉각수 호스, 배선
+{const c=new THREE.CatmullRomCurve3([new THREE.Vector3(0.2,0.78,0.98),new THREE.Vector3(0.3,0.95,1.2),new THREE.Vector3(0.6,0.9,1.35),new THREE.Vector3(0.85,0.7,1.3)]);const m=new THREE.Mesh(new THREE.TubeGeometry(c,32,.06,14),rubber);m.castShadow=true;eng.add(m);A(CY(.068,.068,.04,20),machAl,[0.23,0.82,1.03],[0.9,0,-0.3])}
+{const c=new THREE.CatmullRomCurve3([new THREE.Vector3(0.07,1.2,-0.7),new THREE.Vector3(0.16,1.21,-0.2),new THREE.Vector3(0.14,1.21,0.3),new THREE.Vector3(0.1,1.2,0.75),new THREE.Vector3(0.2,1.0,0.95)]);const m=new THREE.Mesh(new THREE.TubeGeometry(c,40,.022,8),M({color:0x101113,roughness:.8}));m.castShadow=true;eng.add(m)}
+// ---- real parts ----
+const bottle=L.shadow(L.jug());bottle.scale.setScalar(0.34);bottle.position.set(0.37,1.5,0.05);bottle.rotation.y=0.75;sc.add(bottle);
+const filt=L.shadow(L.oilFilter());filt.scale.setScalar(0.46);filt.rotation.z=-Math.PI/2;filt.position.set(1.5,-0.32,0.42);sc.add(filt);
+const plug=L.shadow(L.drainPlug());plug.scale.setScalar(0.62);plug.rotation.x=Math.PI;plug.position.set(0.1,-1.62,0.4);sc.add(plug);
+const wash=L.shadow(L.crushWasher());wash.scale.setScalar(0.62);wash.position.set(0.1,-1.40,0.4);sc.add(wash);
+r.render(sc,cam);
+const P=(x,y,z)=>{const v=new THREE.Vector3(x,y,z).project(cam);return [Math.round((v.x+1)/2*W),Math.round((1-v.y)/2*H)]};
+window.__pts={capMount:P(0.2,1.13,0.05),bottleBase:P(0.25,1.5,0.05),bottleTop:P(0.25,2.4,0.05),
+ filtMount:P(0.53,-0.32,0.42),filtBase:P(1.5,-0.32,0.42),filtEnd:P(2.05,-0.32,0.42),filtTop:P(1.75,0.0,0.42),
+ plugMount:P(0.1,-1.13,0.4),wash:P(0.1,-1.38,0.4),plug:P(0.1,-1.62,0.4),plugEnd:P(0.1,-1.9,0.4)};
+if(new URLSearchParams(location.search).get('glb')){sc.updateMatrixWorld(true);new GLTFExporter().parse(sc,buf=>{let s='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));window.__glb=btoa(s);window.__done=true},e=>console.log('ERR',e),{binary:true});}else window.__done=true;
+</script></body></html>

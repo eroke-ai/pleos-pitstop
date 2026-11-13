@@ -39,7 +39,7 @@ addEventListener('resize', fit); fit();
 if (N && N.lowEffects && N.lowEffects()) document.body.classList.add('lowfx');
 // 이미지 미리 풀어 두기: 화면 밖에 붙여 둬서 첫 전환 때 빈 화면이 보이지 않게 한다
 (() => { const keep = document.createElement('div'); keep.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:.01;pointer-events:none';
-  ['side_xray2', 'xray_zoom2', 'engine_x', 'side_real', 'side_real2', 'drive_bg', 'xray_front', 'parts', 'front_xray'].forEach(n => { const i = new Image(); i.src = `img/${n}.webp`; i.style.width = '1px'; if (i.decode) i.decode().catch(() => {}); keep.appendChild(i); });
+  ['side_xray2', 'engine_mount', 'engine_plug', 'engine_r', 'side_real', 'side_real2', 'drive_bg', 'xray_front', 'parts', 'front_xray'].forEach(n => { const i = new Image(); i.src = `img/${n}.webp`; i.style.width = '1px'; if (i.decode) i.decode().catch(() => {}); keep.appendChild(i); });
   document.body.appendChild(keep); })();
 
 /* ---------------- 네이티브 연결 ---------------- */
@@ -98,22 +98,22 @@ const monthsBetween = (a, b) => { const [y1, m1] = a.split('.').map(Number), [y2
 function lastOf(pid) { return S.hist.filter(h => h.parts && h.parts.includes(pid)).sort((a, b) => b.km - a.km)[0]; }
 function status(it) {
   const w = S.veh.warn, demoTag = k => S.veh.src[k] === 'demo' ? ' · 시연용 신호' : '';
-  if (it.warn === 'engineOil' && w.engineOil) return { l: 'r', tag: '경고', lab: '엔진오일 부족', d: '엔진오일 레벨 경고 · 바로 점검하세요' + demoTag('engineOil') };
+  if (it.warn === 'engineOil' && w.engineOil) return { l: 'r', tag: '경고', lab: '엔진오일 부족', d: '엔진오일 부족 경고 · 바로 점검하세요' + demoTag('engineOil') };
   if (it.warn === 'washer' && w.washer) return { l: 'r', tag: '경고', lab: '워셔액 부족', d: '워셔액 부족 경고 · 직접 보충 가능' + demoTag('washer') };
-  if (it.warn === 'brakeFluid' && w.brakeFluid) return { l: 'r', tag: '경고', lab: '브레이크액 부족', d: '브레이크액 레벨 경고 · 정비소 점검 필요' + demoTag('brakeFluid') };
+  if (it.warn === 'brakeFluid' && w.brakeFluid) return { l: 'r', tag: '경고', lab: '브레이크액 부족', d: '브레이크액 부족 경고 · 정비소에서 점검하세요' + demoTag('brakeFluid') };
   if ((it.warn === 'tire' || it.warn2 === 'tire') && w.tire) return { l: 'r', tag: '경고', lab: (it.id === 'fbrake' ? '앞 타이어' : it.label) + ' 공기압 낮음', d: '타이어 공기압 낮음 경고 · 공기압 점검' + demoTag('tire') };
   const last = it.lastPart && lastOf(it.lastPart);
   if (last && it.interval) {
     const used = S.veh.odo - last.km;
-    if (used >= it.interval) return { l: 'o', tag: '교체 필요', lab: it.label + ' · 교체 필요', d: `마지막 교체 ${km(last.km)} (${last.date.slice(0, 7)}) · 교체 주기 도래` };
+    if (used >= it.interval) return { l: 'o', tag: '교체 필요', lab: it.label + ' · 교체 필요', d: `마지막 교체 ${km(last.km)} (${last.date.slice(0, 7)}) · 교체할 때가 됐습니다` };
     if (used >= it.interval * 0.8) return { l: 'y', tag: '곧 교체', lab: it.label + ' · 곧 교체', d: `마지막 교체 ${km(last.km)} · ${km(it.interval - used)} 남음` };
   }
   if (last && it.months) {
     const m = monthsBetween(last.date, DEMO_TODAY);
-    if (m >= 18) return { l: 'y', tag: '교체 권장', lab: `${it.label} · ${m}개월`, d: `마지막 교체 ${last.date.slice(0, 7)} (${last.src === 'man' ? '직접 입력' : '셀프'})` };
-    if (m >= it.months) return { l: 'o', tag: '교체 권장', lab: it.label + ' · 교체 권장', d: `마지막 교체 ${last.date.slice(0, 7)} · ${m}개월 경과` };
+    if (m >= 18) return { l: 'o', tag: '교체 필요', lab: `${it.label} · ${m}개월`, d: `마지막 교체 ${last.date.slice(0, 7)} (${last.src === 'man' ? '직접 입력' : '셀프'})` };
+    if (m >= it.months) return { l: 'o', tag: '교체 필요', lab: it.label + ' · 교체 필요', d: `마지막 교체 ${last.date.slice(0, 7)} · ${m}개월 경과` };
   }
-  return { l: 'g', tag: '양호', lab: it.label + ' · 양호', d: last ? `마지막 교체 ${last.date.slice(0, 7)} · ${km(last.km)}` : '이상 신호 없음' };
+  return { l: 'g', tag: '양호', lab: it.label + ' · 양호', d: last ? `마지막 교체 ${last.date.slice(0, 7)} · ${km(last.km)}` : '경고 없음' };
 }
 const COL = { r: '#ef4444', o: '#f59e0b', y: '#eab308', g: '#22c55e' };
 const RANK = { r: 0, o: 1, y: 2, g: 3 };
@@ -127,21 +127,24 @@ const addOne = id => { const p = partById(id), q = S.cart[id] || 0; S.cart[id] =
 const packTag = p => p.packs && p.packs[0][0] > 1 ? ` <span class="tagz pkz">${p.packs[0][1]}</span>` : '';
 // 위에서 본 그림: 기통(점화 플러그·코일), 위치별 마운트
 function topView(sel, parts) {
-  if (sel.multi === 'cyl') { const q = S.cart[sel.id] || 0, n = 4;
-    return `<div class="tv"><div class="tvh">엔진을 위에서 본 모습 · 4기통</div>
-     <svg width="620" height="250" viewBox="0 0 620 250"><rect x="40" y="50" width="540" height="150" rx="26" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-opacity=".55" stroke-width="2"/>
-      ${[0, 1, 2, 3].map(i => { const cx = 115 + i * 130, on = i < q; return `<circle cx="${cx}" cy="125" r="46" fill="none" stroke="#22d3ee" stroke-opacity=".35" stroke-width="2"/><circle cx="${cx}" cy="125" r="20" fill="${on ? '#fb923c' : 'rgba(255,255,255,.08)'}" stroke="${on ? '#fdba74' : 'rgba(255,255,255,.4)'}" stroke-width="2"/><text x="${cx}" y="131" text-anchor="middle" font-size="17" font-weight="800" fill="${on ? '#1a0d02' : '#cbd5e1'}">${i + 1}</text><text x="${cx}" y="226" text-anchor="middle" font-size="15" fill="#9fb0c2">${i + 1}번 기통</text>`; }).join('')}</svg>
-     <div class="tvn"><b>${sel.name}</b> ${sel.pn}</div><div class="tvq">${q ? `지금 ${q}개 담음 · ${won(sel.price * q)}` : '아직 담지 않았습니다'}</div></div>`; }
-  const P = { r: [300, 216, '조수석 쪽'], l: [300, 34, '운전석 쪽'], b: [130, 125, '엔진 뒤 아래'] }, tot = parts.reduce((a, p) => a + p.price, 0);
-  return `<div class="tv"><div class="tvh">엔진룸을 위에서 본 모습 · 누르면 그 자리 품번이 나옵니다</div>
-   <svg width="620" height="250" viewBox="0 0 620 250"><path d="M20 20 H470 Q600 30 600 125 Q600 220 470 230 H20" fill="rgba(34,211,238,.04)" stroke="#22d3ee" stroke-opacity=".5" stroke-width="2"/>
-    <rect x="240" y="112" width="180" height="76" rx="12" fill="rgba(34,211,238,.10)" stroke="#22d3ee" stroke-opacity=".6"/><text x="330" y="156" text-anchor="middle" font-size="16" fill="#a5f3fc">엔진</text>
-    <rect x="240" y="62" width="180" height="46" rx="12" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-opacity=".45"/><text x="330" y="91" text-anchor="middle" font-size="16" fill="#a5f3fc">변속기</text>
-    <text x="560" y="131" text-anchor="middle" font-size="15" fill="#9fb0c2">앞 ▶</text><text x="60" y="44" font-size="15" fill="#9fb0c2">운전석 쪽</text><text x="60" y="216" font-size="15" fill="#9fb0c2">조수석 쪽</text></svg>
-   ${parts.map(p => { const [x, y] = P[p.pos], on = p.id === sel.id; return `<button class="tvp${on ? ' on' : ''}${S.cart[p.id] ? ' in' : ''}" style="left:${x}px;top:${y + 34}px" data-pick="${p.id}"><i></i><span>${p.name.split(' (')[0]}</span></button>`; }).join('')}
+  const K = 620 / 900;
+  if (sel.multi === 'cyl') { const q = S.cart[sel.id] || 0, C = [[347, 410], [418, 367], [486, 325], [550, 287]];
+    return `<div class="tv r"><div class="tvi cut"><img src="img/engine_plug.webp" alt="">
+      <svg viewBox="0 0 900 560"><path d="M344 300 L250 300" stroke="#fb923c" stroke-width="2.5" fill="none"/><circle cx="344" cy="300" r="7" fill="#fb923c"/>
+       <path d="M338 120 L250 120" stroke="#7dd3fc" stroke-width="2.5" fill="none"/><circle cx="338" cy="120" r="7" fill="#7dd3fc"/>
+       ${C.map(([x, y], i) => { const on = i < q, bx = i ? x + 4 : 268, by = i ? y - 6 : 452; return `${i ? '' : `<path d="M348 433 L${bx + 24} ${by - 4}" stroke="${on ? '#fb923c' : 'rgba(255,255,255,.6)'}" stroke-width="2.5"/>`}<circle cx="${bx}" cy="${by}" r="24" fill="${on ? '#fb923c' : 'rgba(4,14,22,.9)'}" stroke="${on ? '#fdba74' : 'rgba(255,255,255,.6)'}" stroke-width="2.5"/><text x="${bx}" y="${by + 9}" text-anchor="middle" font-size="25" font-weight="800" fill="${on ? '#1a0d02' : '#e2e8f0'}">${i + 1}</text>`; }).join('')}</svg>
+      <span class="tvl" style="right:${620 - 244 * K}px;top:${300 * K - 14}px;color:#fdba74">점화 플러그</span><span class="tvl" style="right:${620 - 244 * K}px;top:${120 * K - 14}px;color:#bae6fd">점화 코일</span></div>
+     <div class="tvn"><b>${sel.name}</b> ${sel.pn} · 4기통, 코일 아래에 있습니다. 번호는 기통 순서</div><div class="tvq">${q ? `지금 ${q}개 담음 · ${won(sel.price * q)}` : '아직 담지 않았습니다'}</div></div>`; }
+  const P = { r: [181, 163, 96, 70], l: [619, 128, 700, 60], b: [556, 438, 668, 500] }, tot = parts.reduce((a, p) => a + p.price, 0);
+  return `<div class="tv r"><div class="tvi"><img src="img/engine_mount.webp" alt="">
+   <svg viewBox="0 0 900 560">${parts.map(p => { const [x, y, bx, by] = P[p.pos], c = p.id === sel.id ? '#fb923c' : '#22d3ee'; return `<path d="M${x} ${y} L${bx} ${by}" stroke="${c}" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="34" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="7 6"/>`; }).join('')}</svg>
+   ${parts.map(p => { const [, , x, y] = P[p.pos], on = p.id === sel.id; return `<button class="tvp${on ? ' on' : ''}${S.cart[p.id] ? ' in' : ''}" style="left:${Math.round(x * K)}px;top:${Math.round(y * K)}px" data-pick="${p.id}"><i></i><span>${p.name.split(' (')[0]}</span></button>`; }).join('')}</div>
    <div class="tvn">위치마다 품번이 다릅니다. 한 곳만 바꿔도 되고, 어느 쪽인지는 정비소에서 확인하세요.</div>
    <button class="ob tva" id="addall">세 곳 모두 담기 · ${won(tot)}</button></div>`;
 }
+// 부품 그림(직접 만든 3D 그림). 없는 부품은 그림을 넣지 않는다
+const PART_IMG = { engine_oil: 'engine_oil', oil_filter: 'oil_filter', drain_plug: 'drain_plug', drain_washer: 'drain_washer', air_filter: 'air_filter', cabin_filter: 'cabin_filter', wiper_d: 'wiper', wiper_p: 'wiper', f_disc: 'f_disc', r_disc: 'f_disc', f_pad: 'f_pad', r_pad: 'f_pad', tire: 'tire', alloy: 'alloy', battery: 'battery', spark_plug: 'spark_plug', ign_coil: 'ign_coil', mount: 'mount', mount_tm: 'mount', roll_rod: 'roll_rod', washer_fluid: 'washer_fluid', coolant: 'coolant', brake_fluid: 'brake_fluid', f_shock: 'shock', r_shock: 'shock', belt: 'belt' };
+const partImg = id => PART_IMG[id] ? `img/p/${PART_IMG[id]}.webp` : '';
 const cartCount = () => Object.values(S.cart).reduce((a, b) => a + b, 0);
 const cartTotal = () => Object.entries(S.cart).reduce((a, [id, q]) => a + partById(id).price * q, 0);
 const INFO = '<button class="navb info" data-info="1">ⓘ 예시 데이터 안내</button>';
@@ -235,7 +238,7 @@ SCREENS.splash = () => `<div style="position:absolute;inset:0;background:radial-
  <div style="position:absolute;left:380px;right:380px;top:520px">
   <div style="height:4px;background:#13263a;border-radius:4px;overflow:hidden"><div id="bar" style="width:8%;height:100%;background:linear-gradient(90deg,#f97316,#fb923c);transition:width 1.1s ease"></div></div>
   <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:16px" id="chk">
-   <span style="color:#6ee7a0">✔ 내 차 확인 · ${CAR.name}</span><span style="color:#6ee7a0">✔ 주행거리 ${km(S.veh.odo)}</span><span style="color:#7dd3fc" id="chk3">◌ 내 차 순정부품 목록 맞추는 중</span></div></div>
+   <span style="color:#6ee7a0">✔ 내 차 확인 · ${CAR.name}</span><span style="color:#6ee7a0">✔ 주행거리 ${km(S.veh.odo)}</span><span style="color:#7dd3fc" id="chk3">◌ 내 차에 맞는 부품 불러오는 중</span></div></div>
  <div class="mono" style="position:absolute;left:28px;bottom:22px;font-size:15px;color:#3d5a72">VEHICLE SDK · CarInfo(VIN) / Odometer / Gear · ${N ? 'Pleos 연결됨' : '미리보기'}</div>
  <div style="position:absolute;right:28px;bottom:22px;font-size:15px;color:#3d5a72">품번·가격은 예시 데이터</div>`;
 BIND.splash = () => {
@@ -272,12 +275,12 @@ const hotAt = (x, y) => HOT.find(h => x >= h.box[0] && x <= h.box[2] && y >= h.b
 // 렌즈 안 그림: 그 자리에 실제로 들어 있는 부품을 보여 준다(겉모습에 색만 입힌 그림이 아니라).
 const C1 = '#8fe9f7', C2 = 'rgba(143,233,247,.45)', HI = '#ffb15c';
 const LENS_ART = {
-  oil: `<image href="img/engine_x.webp" x="-35" y="-10.4" width="170" height="120.9"/><circle cx="75" cy="70.5" r="11.5" fill="none" stroke="${HI}" stroke-width="1.6" stroke-dasharray="3 2.4"/>`,
-  washer: `<path d="M30 34h30l10 10v30a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V40a6 6 0 0 1 6-6z" fill="rgba(143,233,247,.10)" stroke="${C1}" stroke-width="2"/><path d="M25 62h44v12a5 5 0 0 1-5 5H30a5 5 0 0 1-5-5z" fill="${HI}" opacity=".85"/><rect x="36" y="24" width="16" height="10" rx="2" fill="#12202a" stroke="${C1}" stroke-width="2"/><path d="M70 50c8 0 12 4 12 12v14" fill="none" stroke="${C2}" stroke-width="2"/><path d="M31 56h34M31 48h34" stroke="${C2}" stroke-width="1.2" stroke-dasharray="2 3"/>`,
-  wiper: `<path d="M4 70 Q50 52 96 60" fill="none" stroke="${C2}" stroke-width="2"/><path d="M8 82 Q50 66 94 72" fill="none" stroke="${C2}" stroke-width="1.4"/><circle cx="24" cy="74" r="5" fill="#12202a" stroke="${C1}" stroke-width="2"/><path d="M24 74 L70 34" stroke="${C1}" stroke-width="3.2" stroke-linecap="round"/><path d="M44 22 L90 44" stroke="${HI}" stroke-width="5.5" stroke-linecap="round"/><path d="M44 22 L90 44" stroke="#3a2410" stroke-width="1.4" stroke-linecap="round" transform="translate(-1.2 2.6)"/><circle cx="70" cy="34" r="2.6" fill="${C1}"/>`,
-  cabin: `<path d="M18 40 L70 28 L86 44 L34 58z" fill="#f4f1e8" stroke="${HI}" stroke-width="2.4" stroke-linejoin="round"/><g stroke="#b9b3a2" stroke-width="1.5">${[0,1,2,3,4,5,6,7,8].map(i => `<path d="M${23.5 + i * 5.6} ${38.8 - i * 1.3} L${39.5 + i * 5.6} ${56.5 - i * 1.5}"/>`).join('')}</g><path d="M34 58 L86 44 V54 L34 68z" fill="#2a3138" stroke="${HI}" stroke-width="2" stroke-linejoin="round"/><path d="M18 40 V50 L34 68 V58z" fill="#3a434c" stroke="${HI}" stroke-width="2" stroke-linejoin="round"/><path d="M10 20h46M10 84h78" stroke="${C2}" stroke-width="1.4" stroke-dasharray="3 3"/>`,
-  fbrake: `<circle cx="50" cy="52" r="34" fill="rgba(143,233,247,.08)" stroke="${C1}" stroke-width="2.2"/><circle cx="50" cy="52" r="25" fill="none" stroke="${C2}" stroke-width="1.2"/><circle cx="50" cy="52" r="11" fill="#12202a" stroke="${C1}" stroke-width="2"/>${[0,72,144,216,288].map(a => `<circle cx="${50 + 6.5 * Math.cos(a * Math.PI / 180)}" cy="${52 + 6.5 * Math.sin(a * Math.PI / 180)}" r="1.5" fill="${C1}"/>`).join('')}${[20,65,110,155,200,245,290,335].map(a => `<circle cx="${50 + 19 * Math.cos(a * Math.PI / 180)}" cy="${52 + 19 * Math.sin(a * Math.PI / 180)}" r="1.3" fill="${C2}"/>`).join('')}<path d="M66 18 A38 38 0 0 1 88 46 L76 49 A26 26 0 0 0 61 30z" fill="${HI}" stroke="#3a2410" stroke-width="1.2"/><path d="M70 27 A30 30 0 0 1 81 44" fill="none" stroke="#3a2410" stroke-width="1.6"/>`,
-  rtire: `<circle cx="50" cy="52" r="36" fill="#161a1f" stroke="${HI}" stroke-width="2.4"/><circle cx="50" cy="52" r="22" fill="#0b1118" stroke="${C1}" stroke-width="2"/>${Array.from({ length: 18 }, (_, i) => { const a = i * 20 * Math.PI / 180; return `<path d="M${50 + 25 * Math.cos(a)} ${52 + 25 * Math.sin(a)} L${50 + 34 * Math.cos(a + .12)} ${52 + 34 * Math.sin(a + .12)}" stroke="${HI}" stroke-width="2.2" opacity=".8"/>`; }).join('')}${[0,60,120,180,240,300].map(a => `<path d="M50 52 L${50 + 21 * Math.cos(a * Math.PI / 180)} ${52 + 21 * Math.sin(a * Math.PI / 180)}" stroke="${C2}" stroke-width="2.4"/>`).join('')}<circle cx="50" cy="52" r="5" fill="#12202a" stroke="${C1}" stroke-width="1.6"/>`,
+  oil: `<image href="img/engine_r.webp" x="-35" y="-10.4" width="170" height="120.9"/><circle cx="65" cy="68" r="11.5" fill="none" stroke="${HI}" stroke-width="1.6" stroke-dasharray="3 2.4"/>`,
+  washer: `<image href="img/p/washer_fluid.webp" x="5" y="5" width="90" height="90"/>`,
+  wiper: `<image href="img/p/wiper.webp" x="5" y="5" width="90" height="90"/>`,
+  cabin: `<image href="img/p/cabin_filter.webp" x="5" y="5" width="90" height="90"/>`,
+  fbrake: `<image href="img/p/f_disc.webp" x="5" y="5" width="90" height="90"/>`,
+  rtire: `<image href="img/p/tire.webp" x="5" y="5" width="90" height="90"/>`,
 };
 function lensAt(x, y, r, cls, art) {
   const a = LENS_ART[art];
@@ -315,7 +318,7 @@ SCREENS.home = () => {
   const rows = (prog ? list.slice(0, 5) : list.slice(1)).map(({ it, s }) => { const od = oids.includes(it.part) || oids.includes(it.lastPart); return `<button class="a-row" ${go(it)}><i class="a-dot ${od ? 'c' : tone(s.l)}"></i><b>${it.name}</b><span class="a-tag ${od ? 'c' : tone(s.l)}">${od ? '부품 주문함' : s.tag}</span></button>`; }).join('');
   const cold = S.veh.temp != null && S.veh.temp <= 7;
   let extra = '';
-  if (top && top.it.id === 'oil' && top.s.l !== 'r') { const set = PARTS.filter(p => p.grp === '오일 교환' && p.qty).reduce((a, p) => a + p.price * p.qty, 0); extra = `<div class="a-extra">순정 교환 세트 ${won(set)} · 근처 대리점 재고 있음</div>`; }
+  if (top && top.it.id === 'oil' && top.s.l !== 'r') { const set = PARTS.filter(p => p.grp === '오일 교환' && p.qty).reduce((a, p) => a + p.price * p.qty, 0); extra = `<div class="a-extra">엔진오일 교환 세트 ${won(set)} · 근처 대리점 재고 있음</div>`; }
   const hero = top ? `<div class="a-hero ${tone(top.s.l)}"><div class="a-eyebrow">지금 할 일</div><div class="a-name">${top.it.name}</div><div class="a-why">${top.s.d}</div>${S.easy && EASY[top.it.id] ? `<div class="a-why easy">${EASY[top.it.id]}</div>` : extra}
     <div class="a-acts">${top.it === bhItem ? `<button class="a-btn p" data-bh="${top.it.id}">블루핸즈 예약</button><button class="a-btn" ${go(top.it)}>부품 보기</button>` : `<button class="a-btn p" ${go(top.it)}>부품 보기 · 주문</button>`}</div></div>`
     : '<div class="a-hero g"><div class="a-eyebrow">지금 할 일</div><div class="a-name">손볼 곳이 없습니다</div><div class="a-why">부품을 찾으려면 차를 누르거나 위 검색창을 쓰세요.</div></div>';
@@ -330,10 +333,10 @@ SCREENS.home = () => {
   <svg class="a-svg" width="1600" height="720">${lines}</svg>${h}
   <div class="a-dock"><div class="srch a-srch" id="srchbox"><span class="a-mag">🔍</span><input id="q" placeholder="부품 이름 · 품번 · 증상으로 찾기" value=""><button class="mic" id="vsearch">🎙 말하기</button></div>
    ${ZONES.map(z => `<button class="tab" data-go="zone" data-zone="${z.id}">${z.name}</button>`).join('')}</div>
-  <div class="a-filt"><span>골라 보기</span><button class="tab" data-go="search" data-filter="self">셀프 교체</button><button class="tab" data-go="search" data-filter="fix">파손 수리</button><button class="tab" data-go="search" data-filter="cheap">1만 원 이하</button></div>
+  <div class="a-filt"><span>모아 보기</span><button class="tab" data-go="search" data-filter="self">셀프 교체</button><button class="tab" data-go="search" data-filter="fix">파손 수리</button><button class="tab" data-go="search" data-filter="cheap">1만 원 이하</button></div>
   <div class="a-read"><i class="a-tap"></i>차의 아무 곳이나 눌러 보세요. 그 자리 부품이 열립니다.</div>
   <div class="a-panel">
-   <div class="a-count"><div class="a-cap">점검 필요</div><div class="a-num">${list.length}<small>건</small></div></div>
+   <div class="a-count"><div class="a-cap">손볼 곳</div><div class="a-num">${list.length}<small>건</small></div></div>
    ${prog ? progHero : hero}
    <div class="a-list">${rows}${cold && !(prog && list.length >= 4) ? `<button class="a-row" data-go="search" data-filter="winter"><i class="a-dot c"></i><b>겨울 전 점검</b><span class="a-tag c">바깥 ${Math.round(S.veh.temp)}℃${S.veh.src.temp === 'demo' ? ' · 시연용 신호' : ''}</span></button>` : ''}</div>
    ${list.length <= 3 && !prog ? '<div class="a-foot">주행 중에는 알림을 띄우지 않습니다.</div>' : ''}
@@ -412,8 +415,10 @@ SCREENS.zone = r => {
   const z = r.zone, sl = sysList(z), names = Object.keys(sl), total = PARTS.filter(p => p.zone === z).length;
   let pic = '', hs = '';
   if (z === 'en') {
-    pic = `<img src="img/xray_zoom2.webp" style="position:absolute;left:60px;top:120px;width:1064px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 92%,transparent);filter:drop-shadow(0 0 24px rgba(34,211,238,.25))">`;
-    hs = names.filter(n => ENGINE_SYS_SPOTS[n]).map(n => { const [x, y] = ENGINE_SYS_SPOTS[n], l = sysLevel(z, n); return `<button class="hs" style="left:${60 + x / 100 * 1064}px;top:${120 + y / 100 * 722}px" data-go="sys" data-zone="${z}" data-sys="${n}"><i class="${l === 'r' ? 'r' : l === 'o' || l === 'y' ? '' : 'c'}"></i><span>${n} <em>${sl[n].length}</em></span></button>`; }).join('');
+    // 엔진 그림 위에 계통 자리, 엔진 밖 부품(배터리·냉각수·워셔액)은 옆에 따로
+    const K = 800 / 900, EP = { '엔진오일': [411, 115], '점화': [436, 59], '흡기': [228, 100], '벨트': [222, 330], '마운트(미미)': [181, 163] }, SAT = { '배터리·전기': ['battery', 60, 392, 176], '냉각': ['coolant', 1010, 150, 132], '워셔': ['washer_fluid', 1010, 400, 132] };
+    pic = `<img src="img/engine_mount.webp" style="position:absolute;left:230px;top:158px;width:800px;height:498px;filter:drop-shadow(0 22px 30px rgba(0,0,0,.6))">` + Object.values(SAT).map(([f, x, y, w]) => `<img src="img/p/${f}.webp" style="position:absolute;left:${x}px;top:${y}px;width:${w}px;filter:drop-shadow(0 12px 16px rgba(0,0,0,.55))">`).join('');
+    hs = names.map(n => { const e = EP[n], t = SAT[n]; if (!e && !t) return ''; const x = e ? 230 + e[0] * K : t[1] + t[3] / 2 - 14, y = e ? 158 + e[1] * K : t[2] + t[3] + 14, l = sysLevel(z, n); return `<button class="hs${n === '마운트(미미)' || n === '벨트' || n === '흡기' ? ' lf' : ''}${t ? ' ct' : ''}" style="left:${x}px;top:${y}px" data-go="sys" data-zone="${z}" data-sys="${n}"><i class="${l === 'r' ? 'r' : l === 'o' || l === 'y' ? '' : 'c'}"></i><span>${n} <em>${sl[n].length}</em></span></button>`; }).join('');
   } else {
     pic = `<img src="img/side_xray2.webp" style="position:absolute;left:100px;top:150px;width:1000px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">`;
     const used = [];
@@ -424,12 +429,12 @@ SCREENS.zone = r => {
       return `<button class="hs" style="left:${100 + x / 100 * 1000}px;top:${150 + y / 100 * 548}px" data-go="sys" data-zone="${z}" data-sys="${n}"><i class="${l === 'r' ? 'r' : l === 'o' || l === 'y' ? '' : 'c'}"></i><span>${n} <em>${sl[n].length}</em></span></button>`;
     }).join('');
   }
-  const rows = names.map(n => { const l = sysLevel(z, n), st = l === 'r' ? `<span style="color:#fca5a5">경고 1</span>` : l === 'o' ? `<span style="color:#fdba74">교체 필요 1</span>` : l === 'y' ? `<span style="color:#fde68a">교체 권장 1</span>` : `<span>${sl[n].length}</span>`;
+  const rows = names.map(n => { const l = sysLevel(z, n), st = l === 'r' ? `<span style="color:#fca5a5">경고 1</span>` : l === 'o' ? `<span style="color:#fdba74">교체 필요 1</span>` : l === 'y' ? `<span style="color:#fde68a">곧 교체 1</span>` : `<span>${sl[n].length}</span>`;
     return `<button class="sys${l !== 'g' ? ' on' : ''}" data-go="sys" data-zone="${z}" data-sys="${n}">${n}${st}</button>`; }).join('');
   const tasks = TASKS.filter(t => t.zone === z);
   return `${topParts('', '차량 이미지: 현대자동차 공식 사진 가공 · 품번·가격은 예시')}
  <div style="position:absolute;left:24px;top:72px;display:flex;gap:10px;align-items:center;z-index:4">${miniCar(z)}
-  <div class="crumb"><button data-go="home">차 전체</button> › <b>${zoneName(z)}</b><div class="sm mu" style="margin-top:4px">계통을 누르면 부품 그림으로 들어갑니다</div></div></div>
+  <div class="crumb"><button data-go="home">차 전체</button> › <b>${zoneName(z)}</b><div class="sm mu" style="margin-top:4px">이름을 누르면 부품 그림이 열립니다</div></div></div>
  <div style="position:absolute;left:400px;top:76px;display:flex;gap:8px;z-index:4">${ZONES.map(o => `<button class="zone${o.id === z ? ' on' : ''}" data-go="zone" data-zone="${o.id}">${o.name}</button>`).join('')}</div>
  ${pic}${hs}
  <div class="side scroll" style="width:440px;left:1160px;padding:20px 22px"><b style="font-size:20px">${zoneName(z)} · ${total}종</b>
@@ -439,7 +444,7 @@ SCREENS.zone = r => {
 };
 
 /* ---------------- 03c 계통·부품 그림·주문 ---------------- */
-const OIL_DIAGRAM = { drain_plug: [425, 545, 470, 588, '풀기'], drain_washer: [425, 545, 236, 558, '새것으로'], oil_filter: [463, 460, 730, 470, ''], engine_oil: [459, 260, 520, 132, '주입구로 넣기'] };
+const OIL_DIAGRAM = { drain_plug: [425, 545, 470, 588, '풀기'], drain_washer: [425, 545, 236, 558, '교체'], oil_filter: [676, 474, 676, 474, '교체'], engine_oil: [459, 260, 520, 132, '넣기'] };
 SCREENS.sys = r => {
   const z = r.zone, sys = r.sys, inSys = PARTS.filter(p => p.zone === z && p.sys === sys);
   const grps = [...new Set(inSys.map(p => p.grp))]; const grp = r.grp && grps.includes(r.grp) ? r.grp : (r.part ? partById(r.part).grp : grps[0]); r.grp = grp;
@@ -448,19 +453,20 @@ SCREENS.sys = r => {
   let center;
   if (isOil) {
     const lab = { drain_plug: '드레인 플러그', drain_washer: '와셔', oil_filter: '오일 필터', engine_oil: '엔진오일' };
-    center = `<div style="position:absolute;left:605px;top:455px;width:100px;height:100px;border-radius:50%;background:radial-gradient(closest-side,rgba(251,146,60,.45),transparent)"></div>
-     <img src="img/engine_x.webp" style="position:absolute;left:70px;top:80px;width:900px;height:640px">
-     <svg style="position:absolute;left:0;top:0" width="920" height="720"><g fill="none" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"><path d="M459 258 L462 214" stroke="#9fb3c8"/><path d="M465 461 L612 498" stroke="#fb923c"/><path d="M425 547 L425 566 M425 582 L426 592" stroke="#9fb3c8"/></g><circle cx="655" cy="506" r="64" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="3 7" opacity=".9"/></svg>
+    center = `<div style="position:absolute;left:540px;top:436px;width:120px;height:120px;border-radius:50%;background:radial-gradient(closest-side,rgba(251,146,60,.35),transparent)"></div>
+     <img src="img/engine_r.webp" style="position:absolute;left:70px;top:80px;width:900px;height:640px;filter:drop-shadow(0 18px 24px rgba(0,0,0,.55))">
+     <svg style="position:absolute;left:0;top:0" width="920" height="720"><g fill="none" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round"><path d="M459 258 L462 214" stroke="#9fb3c8"/><path d="M465 461 L556 484" stroke="#fb923c"/><path d="M425 547 L425 566 M425 582 L426 592" stroke="#9fb3c8"/></g><circle cx="600" cy="496" r="62" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="3 7" opacity=".9"/></svg>
      <div class="mt" style="left:459px;top:260px"></div><div class="mt" style="left:463px;top:460px"></div><div class="mt" style="left:425px;top:545px"></div>
      ${parts.map(p => { const d = OIL_DIAGRAM[p.id]; return `<button class="pl${p.id === sel.id ? ' on' : ''}" style="left:${d[2]}px;top:${d[3]}px" data-pick="${p.id}"><b>${p.step}</b>${lab[p.id]}${d[4] ? ` <em>${d[4]}</em>` : ''}</button>`; }).join('')}
      <div style="position:absolute;left:24px;bottom:16px;display:flex;gap:8px;align-items:center;font-size:15px;color:#9fb0c2"><span style="color:#e6f0fa;font-weight:700;margin-right:4px">교환 순서</span>①&nbsp;플러그 풀고 오일 빼기 <span style="color:#56687c">›</span> ②&nbsp;와셔 교체 <span style="color:#56687c">›</span> ③&nbsp;필터 교체 <span style="color:#56687c">›</span> ④&nbsp;새 오일 넣기</div>`;
   } else if (sel.multi || sel.pos) {
-    center = `<img src="img/side_xray2.webp" style="position:absolute;left:60px;top:200px;width:860px;opacity:.16">${topView(sel, parts)}`;
+    center = `${topView(sel, parts)}`;
   } else {
     const [x, y] = SPOTS[sel.spot];
     center = `<img src="img/side_xray2.webp" style="position:absolute;left:60px;top:200px;width:860px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">
      ${pinHtml(60 + x / 100 * 860, 200 + y / 100 * 471, '#fb923c', true)}
      <div class="label L-o" style="left:${Math.min(60 + x / 100 * 860 - 60, 700)}px;top:${200 + y / 100 * 471 - 70}px">${sel.name}</div>
+     ${partImg(sel.id) ? `<div class="pshot"><img src="${partImg(sel.id)}" alt=""><span>부품 모습 · 예시 그림</span></div>` : ''}
      <div style="position:absolute;left:24px;bottom:18px;font-size:15px;color:#9fb0c2">위치: ${zoneName(z)} › ${sys}${sel.self ? ' · <span style="color:#6ee7a0">셀프 교체 가능</span>' : ' · 정비소 교체 권장'}</div>`;
   }
   // 오일 교환은 처음 들어올 때 기본 세트를 담아 둔다
@@ -475,7 +481,7 @@ SCREENS.sys = r => {
      ${p.packs ? `<div class="pks"><span class="mu">수량</span>${p.packs.map(([n, t]) => `<button class="ob${q === n ? ' on' : ''}" data-setq="${p.id}:${n}">${t}</button>`).join('')}<span class="pkt">${q ? `${won(p.price)} × ${q} = <b>${won(p.price * q)}</b>` : `개당 ${won(p.price)}`}</span></div>` : ''}
      <dl class="gb"><dt>적용 차종</dt><dd>${CAR.name} ${CAR.trim} · ${CAR.year}년~ <span style="color:#6ee7a0">✔ 내 차 일치</span></dd>
       ${p.alt ? `<dt>대체 품번</dt><dd><span class="mono">${p.alt}</span> <span class="mu">이전 품번 · 같은 부품</span></dd>` : ''}
-      ${p.spec ? `<dt>규격</dt><dd>${p.spec}</dd>` : ''}${p.cycle ? `<dt>교환 주기</dt><dd>${p.cycle}</dd>` : ''}
+      ${p.spec ? `<dt>규격</dt><dd>${p.spec}</dd>` : ''}${p.cycle ? `<dt>교체 주기</dt><dd>${p.cycle}</dd>` : ''}
       <dt>이전 교체</dt><dd>${last ? `${last.date} · ${km(last.km)}` : '<span class="mu">기록 없음</span>'}</dd></dl>
      <div style="margin-top:6px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08)">
       <div class="st"><span class="d"></span>${d0.name} <span class="mu">${d0.km}km</span><span style="margin-left:auto">재고 3 · <b style="color:#6ee7a0">오늘 수령</b></span></div>
@@ -554,7 +560,7 @@ SCREENS.search = r => {
      <div class="card" style="margin-top:10px;font-size:15px;line-height:2">
       <div style="display:flex;justify-content:space-between"><span class="mu">가격</span><span>${won(sel.price)}${sel.packs ? ` · ${sel.packs[0][1]} ${won(sel.price * pack0(sel))}` : ''}</span></div>
       <div style="display:flex;justify-content:space-between"><span class="mu">재고</span><span>${d0.name} 2 · 오늘 수령</span></div>
-      <div style="display:flex;justify-content:space-between"><span class="mu">교체</span><span>${sel.note || (sel.self ? '셀프 교체 가능' : '정비소 권장')}</span></div></div>
+      <div style="display:flex;justify-content:space-between"><span class="mu">교체</span><span>${sel.note || (sel.self ? '셀프 교체 가능' : '정비소 교체 권장')}</span></div></div>
      <div class="card" style="margin-top:10px;font-size:15px"><span class="mu sm">이전 교체</span> &nbsp;${last ? `${last.date} · ${km(last.km)}` : '없음'}</div>
      <div style="position:absolute;left:22px;right:22px;bottom:18px;display:flex;gap:10px"><button class="btn s" style="flex:1;font-size:16px" data-go="sys" data-zone="${sel.zone}" data-sys="${sel.sys}" data-grp="${sel.grp}" data-part="${sel.id}">부품 그림 보기</button><button class="btn p" style="flex:1;font-size:16px" data-add="${sel.id}">${S.cart[sel.id] ? `담김 ${S.cart[sel.id]}` : sel.packs ? `${pack0(sel)}개 담기` : '담기'}</button></div></div>`;
   } else { const again = ['cabin_filter', 'wiper_d', 'engine_oil', 'battery'].map(partById);
@@ -566,7 +572,7 @@ SCREENS.search = r => {
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">${again.map(p => `<button class="tab" data-go="search" data-q="${p.name.split(' (')[0]}">${p.name.split(' (')[0]}</button>`).join('')}</div></div>`; }
   return `${topParts(r.q || '', '품번·가격·재고는 예시')}
  <div style="position:absolute;left:24px;top:72px;width:330px;bottom:16px;z-index:4"><div class="crumb">${head}</div>
-  <div class="scroll" style="margin-top:12px;position:absolute;top:24px;bottom:36px;left:0;right:0">${list.map(p => `<button class="res${sel && p.id === sel.id ? ' on' : ''}" data-res="${p.id}"><div style="display:flex;justify-content:space-between"><b style="font-size:16px">${p.name}</b><span class="tagz">${zoneName(p.zone)}</span></div><div class="sm mu" style="margin-top:3px">${p.sys}${p.note ? ' · ' + p.note : p.self ? ' · 셀프 가능' : ''} · ${won(p.price)}</div></button>`).join('')}</div>
+  <div class="scroll" style="margin-top:12px;position:absolute;top:24px;bottom:36px;left:0;right:0">${list.map(p => `<button class="res${sel && p.id === sel.id ? ' on' : ''}" data-res="${p.id}">${partImg(p.id) ? `<img class="rth" src="${partImg(p.id)}" alt="">` : '<i class="rth"></i>'}<div class="rtx"><div style="display:flex;justify-content:space-between"><b style="font-size:16px">${p.name}</b><span class="tagz">${zoneName(p.zone)}</span></div><div class="sm mu" style="margin-top:3px">${p.sys}${p.note ? ' · ' + p.note : p.self ? ' · 셀프 가능' : ''} · ${won(p.price)}</div></div></button>`).join('')}</div>
   <button class="sm mu" style="position:absolute;bottom:0;padding:21px 0 17px" data-go="home">못 찾으셨나요? 구역에서 찾기 ›</button></div>
  ${center}${side}`;
 };
@@ -708,7 +714,7 @@ SCREENS.work = () => {
    <div class="h" style="font-size:30px;margin-top:6px">정비 요청서</div>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
     <div class="card"><div class="mu sm">차량</div><div style="font-size:18px;font-weight:700">${CAR.name} ${CAR.trim}</div><div class="sm mu">차대번호 ${vin} · ${km(v.odo)}</div></div>
-    <div class="card"><div class="mu sm">요청 작업</div><div style="font-size:18px;font-weight:700">${o ? o.title : S.visit && S.visit.why ? esc(S.visit.why) + ' 점검' : sym.length ? '앞쪽 하체 소음 점검' : '점검'}${o && sym.length ? ' + 하체 소음 점검' : ''}</div><div class="sm mu">${o ? `지참 부품 ${o.items.length}종 · ${o.items.map(i => partById(i.id).no).join(', ')}` : '지참 부품 없음'}</div></div></div>
+    <div class="card"><div class="mu sm">요청 작업</div><div style="font-size:18px;font-weight:700">${o ? o.title : S.visit && S.visit.why ? esc(S.visit.why) + ' 점검' : sym.length ? '앞쪽 하체 소음 점검' : '점검'}${o && sym.length ? ' + 하체 소음 점검' : ''}</div><div class="sm mu">${o ? `가져온 부품 ${o.items.length}종 · ${o.items.map(i => partById(i.id).no).join(', ')}` : '가져온 부품 없음'}</div></div></div>
    ${sym.length ? `<div class="card" style="margin-top:12px;border-color:#7a2a62"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:17px">증상 기록 ${sym.length}건 · 주행 중 소리</b><span class="tag t-sym">차량 기록</span></div>
     <table class="sym"><tr><th>일시</th><th>속도</th><th>기어</th><th>브레이크</th><th>주행거리</th></tr>${sym.slice(-4).map(s => `<tr><td>${s.t.slice(5, 10).replace('-', '.')} ${s.t.slice(11, 16)}</td><td>${s.speed} km/h</td><td>${s.gear}</td><td>${s.brake}</td><td>${km(s.km)}</td></tr>`).join('')}</table>
     ${slow || brk ? `<div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:#2a1023;color:#f5c2e4;font-size:15px">${sym.length}건 모두 ${[slow ? '<b>20km/h 이하</b>' : '', brk ? '<b>제동 전후</b>' : ''].filter(Boolean).join(', ')}</div>` : ''}</div>` : ''}
@@ -724,7 +730,7 @@ function nextCard() {
   const soon = CHECK_ITEMS.filter(it => it.interval && lastOf(it.lastPart) && status(it).l === 'g').map(it => ({ it, left: it.interval - (S.veh.odo - lastOf(it.lastPart).km) })).filter(x => x.left > 0).sort((a, b) => a.left - b.left)[0];
   const line = (it, t, c) => `<button class="nx" ${go(it)}><b>${it.name}</b><span style="color:${c}">${t} ›</span></button>`;
   return `<div class="card" style="margin-top:12px;padding:12px 14px;border-color:#7a4d0c;background:#1a1408"><div style="font-size:15px;font-weight:800;color:#fdba74">다음 할 일</div>
-   ${now ? line(now.it, now.s.tag, now.s.l === 'r' ? '#fca5a5' : '#fdba74') : '<div style="font-size:16px;margin-top:6px">지금 손볼 곳은 없습니다</div>'}${soon ? line(soon.it, '약 ' + km(soon.left) + ' 뒤', '#c7d3e0') : ''}</div>`;
+   ${now ? line(now.it, now.s.tag, now.s.l === 'r' ? '#fca5a5' : '#fdba74') : '<div style="font-size:16px;margin-top:6px">손볼 곳이 없습니다</div>'}${soon ? line(soon.it, '약 ' + km(soon.left) + ' 뒤', '#c7d3e0') : ''}</div>`;
 }
 SCREENS.history = r => {
   const f = r.f || 'all', recs = S.hist.filter(h => !h.divider), ok = recs.filter(h => h.src === 'ok' || h.src === 'bh').length, man = recs.filter(h => h.src === 'man').length, edits = recs.reduce((a, h) => a + (h.edits ? h.edits.length : 0), 0);
@@ -748,7 +754,7 @@ SCREENS.history = r => {
     <div class="card" style="margin-top:12px;font-size:15px"><table class="sym">${S.sym.slice(-5).map(s => `<tr><td>${s.t.slice(5, 10).replace('-', '.')} ${s.t.slice(11, 16)}</td><td>${s.speed}km/h</td><td>${s.brake}</td><td>${km(s.km)}</td></tr>`).join('')}</table></div>
     <div class="sm mu" style="margin-top:10px">정비소 도착 시 정비 요청서에 함께 표시됩니다.</div>`;
   else if (sel) {
-    const nx = sel.parts && sel.parts.includes('engine_oil') ? `<div class="card" style="margin-top:10px;font-size:15px"><div class="mu sm">다음 교환</div>${km(sel.km + 15000)} 또는 1년 뒤 (먼저 오는 시점)</div>` : '';
+    const nx = sel.parts && sel.parts.includes('engine_oil') ? `<div class="card" style="margin-top:10px;font-size:15px"><div class="mu sm">다음 교체</div>${km(sel.km + 15000)} 또는 1년 뒤 (먼저 오는 시점)</div>` : '';
     detail = `<div class="h" style="font-size:22px;margin-top:4px">${sel.title}</div><div style="margin-top:8px">${TAG[sel.src]} <span class="sm mu">확인 근거</span></div>
      <div class="card" style="margin-top:12px;font-size:15px;line-height:1.9">${(sel.basis || []).map(b => `<div>${b.includes('차량 기록') ? '🚗' : b.includes('주문') ? '🧾' : b.includes('직접') ? '✍️' : '🛠'} ${b}</div>`).join('')}</div>
      ${sel.parts && sel.parts.length ? `<div class="card" style="margin-top:10px;font-size:15px;line-height:1.8"><div class="mu sm">사용한 순정부품</div>${sel.parts.map(id => { const p = partById(id); return `${p.name} <span class="mono">${p.no}</span>`; }).join('<br>')}</div>` : ''}

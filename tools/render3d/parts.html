@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style></head><body>
+<script type="importmap">{"imports":{"three":"./three.module.js"}}</script>
+<script type="module">
+import { GLTFExporter } from "./node_modules/three/examples/jsm/exporters/GLTFExporter.js";
+import * as THREE from './three.module.js';
+import { RoomEnvironment } from './RoomEnvironment.js';
+import * as L from './partlib.js';
+const q=new URLSearchParams(location.search),name=q.get('p')||'jug',W=480,H=480;
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+r.setPixelRatio(2);r.setSize(W,H);r.setClearColor(0,0);r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.15;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.outputColorSpace=THREE.SRGBColorSpace;
+document.body.appendChild(r.domElement);
+const sc=new THREE.Scene();sc.environment=new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(),0.04).texture;
+const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(4,8,6);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0006;key.shadow.radius=4;sc.add(key);
+sc.add(new THREE.HemisphereLight(0xbfd8ff,0x1a1410,0.55));const rim=new THREE.DirectionalLight(0x9fe8ff,1.5);rim.position.set(-6,3,-5);sc.add(rim);const warm=new THREE.PointLight(0xffa860,4,12);warm.position.set(3,1,4);sc.add(warm);
+const G=new THREE.Group();sc.add(G);const put=(o,p=[0,0,0],rot=[0,0,0],s=1)=>{o.position.set(...p);o.rotation.set(...rot);o.scale.setScalar(s);G.add(o);return o};
+let dir=[1,.62,1.25];
+const B={
+ engine_oil:()=>put(L.jug(),[0,0,0],[0,.35,0]),
+ oil_filter:()=>put(L.oilFilter(),[0,0,0],[0,.5,0]),
+ oil_filter_base:()=>{put(L.oilFilter(),[0,.5,0],[2.2,.3,0])},
+ drain_plug:()=>{put(L.drainPlug(),[0,.27,0],[0,0,1.25]);dir=[1,.8,1.2]},
+ drain_washer:()=>{put(L.crushWasher(),[0,0,0],[.25,0,0]);dir=[1,1.1,1.2]},
+ oil_set:()=>{put(L.jug(),[-.5,0,-.3],[0,.3,0]);put(L.oilFilter(),[.95,0,.35],[0,.6,0],.85);put(L.drainPlug(),[.1,.2,1.05],[0,0,1.3],.85);put(L.crushWasher(),[-.55,0,1.0],[0,0,0],.85)},
+ cabin_filter:()=>{put(L.pleatFilter(),[0,0,0],[0,.3,0]);dir=[1,.95,1.2]},
+ air_filter:()=>{put(L.pleatFilter({w:2.4,d:1.7,h:.42,frame:0xd9772b,n:30}),[0,0,0],[0,.3,0]);dir=[1,.95,1.2]},
+ wiper:()=>{put(L.wiper(),[0,0,0],[.75,.35,.45]);dir=[.5,.6,1.4]},
+ f_disc:()=>{put(L.disc(),[0,0,0],[1.15,0,.2]);dir=[.9,.5,1.3]},
+ f_pad:()=>{put(L.padSet());dir=[.9,.8,1.3]},
+ plug_set:()=>{put(L.drainPlug(),[0,.27,0],[0,0,1.25]);put(L.crushWasher(),[.25,0,.55],[0,0,0]);dir=[1,.8,1.2]},
+ brake:()=>{put(L.disc(),[0,0,0],[1.15,0,.2]);put(L.pad(),[.75,-.35,.95],[-.5,-.3,-.5],.8);dir=[.9,.5,1.3]},
+ tire:()=>{put(L.tire(),[0,0,0],[0,-.1,0]);dir=[.9,.3,1.3]},
+ alloy:()=>{put(L.tire({rubber:false}),[0,0,0],[0,.55,0]);dir=[.9,.35,1.3]},
+ battery:()=>put(L.battery(),[0,0,0],[0,.35,0]),
+ spark_plug:()=>{put(L.sparkPlug(),[0,0,0],[0,0,-.9]);dir=[.7,.6,1.4]},
+ ign_coil:()=>{put(L.coil(),[0,0,0],[0,.4,-.5]);dir=[.8,.6,1.4]},
+ mount:()=>{put(L.mount(),[0,0,0],[0,.5,0]);dir=[1,.75,1.2]},
+ roll_rod:()=>{put(L.rollRod(),[0,0,0],[.3,.4,.2]);dir=[.8,.7,1.3]},
+ washer_fluid:()=>put(L.jug({color:0x2563eb,clear:true,lines:[['워셔액',120,800],['2L',84,700],['사계절용 · 예시',40,500,'#6b7280']],band:'#2563eb',cap:0x1e3a8a}),[0,0,0],[0,.35,0]),
+ coolant:()=>put(L.jug({color:0x10b981,clear:true,lines:[['냉각수',120,800],['부동액 2L',72,700],['순정 · 예시',40,500,'#6b7280']],band:'#059669',cap:0x111827}),[0,0,0],[0,.35,0]),
+ brake_fluid:()=>put(L.jug({color:0xd1d5db,lines:[['BRAKE FLUID',62,800],['DOT 4',120,800],['1L',76,700],['순정 · 예시',40,500,'#6b7280']],band:'#dc2626',cap:0x111827}),[0,0,0],[0,.35,0]),
+ shock:()=>{put(L.shock(),[0,0,0],[0,0,-.5]);dir=[.6,.4,1.4]},
+ belt:()=>{put(L.belt());dir=[.8,.9,1.3]},
+ bulb:()=>{put(L.bulb(),[0,0,0],[0,0,-.6]);dir=[.7,.5,1.4]},
+};
+(B[name]||B.engine_oil)();L.shadow(G);
+const box=new THREE.Box3().setFromObject(G),c=box.getCenter(new THREE.Vector3()),sp=new THREE.Sphere();box.getBoundingSphere(sp);
+const fov=22,cam=new THREE.PerspectiveCamera(fov,1,.1,200),d=sp.radius/Math.sin(fov/2*Math.PI/180)*1.04,v=new THREE.Vector3(...dir).normalize();
+cam.position.copy(c).addScaledVector(v,d);cam.lookAt(c);
+const s=sp.radius*1.3;Object.assign(key.shadow.camera,{left:-s,right:s,top:s,bottom:-s});key.shadow.camera.updateProjectionMatrix();key.target.position.copy(c);sc.add(key.target);key.position.copy(c).add(new THREE.Vector3(4,8,6));
+if(q.get('glb')){G.updateMatrixWorld(true);new GLTFExporter().parse(G,buf=>{let s='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));window.__glb=btoa(s);window.__dir=dir;window.__done=true},e=>{console.log('ERR',e)},{binary:true});}
+else setTimeout(()=>{const mode=q.get('pass');if(mode){sc.environment=null;const nm=new THREE.MeshNormalMaterial(),cl=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1});G.traverse(o=>{if(o.isMesh)o.material=mode==='n'?nm:cl});if(mode==='n'){sc.children.filter(o=>o.isLight).forEach(l=>l.visible=false)}else{rim.visible=false;warm.visible=false}r.toneMapping=THREE.NoToneMapping}
+r.render(sc,cam);window.__pts={};window.__done=true},60);
+</script></body></html>

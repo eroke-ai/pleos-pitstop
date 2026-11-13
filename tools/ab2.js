@@ -32,7 +32,7 @@ const [A, B, out] = process.argv.slice(2);
     await tap('[data-savepn]');
     r.savePn = { taps, ok: await ev(() => S.saved.length === 1) };
     // 5) 주문 뒤 첫 화면에서 다음 할 일을 알 수 있는가
-    await fresh(); await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진 윤활' })); await w(300); await p.click('#order'); await w(300); await p.click('#opaid'); await w(300); await p.click('#onow'); await w(300);
+    await fresh(); await ev(() => go({ name: 'sys', zone: 'en', sys: '엔진오일' })); await w(300); await p.click('#order'); await w(300); await p.click('#opaid'); await w(300); await p.click('#onow'); await w(300);
     await ev(() => go({ name: 'home' })); await w(300);
     r.afterOrder = { shown: await ev(() => /주문한 부품|주문 내역|부품 주문함/.test(document.getElementById('stage').innerText)), cartLeft: await ev(() => cartCount()) };
     // 6) 구역으로 들어가는 데 걸리는 시간(누른 뒤 구역 화면이 뜰 때까지, 5회 중앙값)
