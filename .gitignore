@@ -1,0 +1,26 @@
+# build outputs
+build/
+.gradle/
+.kotlin/
+*.apk
+*.aab
+pitstop-built.tar.gz
+local.properties
+# media / work folders
+*.mp4
+shots/
+backup/
+notes/
+# secrets
+*.jks
+*.keystore
+*.p12
+.env
+.env.*
+# images derived from official vehicle photos (copyright) — see app/src/main/assets/web/img/README.txt
+app/src/main/assets/web/img/side_real*.webp
+app/src/main/assets/web/img/side_xray*.webp
+app/src/main/assets/web/img/xray_zoom*.webp
+app/src/main/assets/web/img/front_xray.webp
+app/src/main/assets/web/img/xray_front.webp
+app/src/main/assets/web/img/drive_bg.webp

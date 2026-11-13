@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.hardware.type.automotive" android:required="true" />
+
+    <!-- Pleos Vehicle SDK: 상태 조회 권한만 사용 (제어·PRIVATE 권한 없음) -->
+    <uses-permission android:name="pleos.car.permission.CAR_INFO" />
+    <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />
+    <uses-permission android:name="pleos.car.permission.CAR_SAFETY" />
+
+    <!-- AAOS 표준 Car API: 차속·기어 (에뮬레이터에서 동작 확인) -->
+    <uses-permission android:name="android.car.permission.CAR_SPEED" />
+    <uses-permission android:name="android.car.permission.CAR_POWERTRAIN" />
+    <!-- 바깥 기온(ENV_OUTSIDE_TEMPERATURE): 겨울 전 점검 카드 -->
+    <uses-permission android:name="android.car.permission.CAR_EXTERIOR_ENVIRONMENT" />
+
+    <!-- 음성 검색·증상 기록 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Pleos TTS SDK (Pleos Connect에는 안드로이드 기본 TTS 엔진이 없음) -->
+    <uses-permission android:name="pleos.car.permission.TTS_SERVICE" />
+    <!-- Pleos STT SDK (pleos 빌드의 음성 인식, ON_DEVICE) -->
+    <uses-permission android:name="pleos.car.permission.STT_SERVICE" />
+    <!-- NaviHelper.addWaypoint (정비소를 경유지로 추가) -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE_SEARCH" />
+
+    <queries>
+        <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
+        <intent><action android:name="android.speech.RecognitionService" /></intent>
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.PitStop">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustNothing"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|density|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection|fontScale">
+            <!-- 주행 중 화면(속도 + 음성 버튼 하나)만 보여 주므로 주행 중에도 앱을 띄울 수 있게 표시.
+                 없으면 AAOS가 기어 D에서 앱을 '주행 중에는 사용할 수 없습니다'로 가린다. -->
+            <meta-data android:name="distractionOptimized" android:value="true" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
