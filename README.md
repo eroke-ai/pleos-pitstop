@@ -14,8 +14,10 @@
 | `app/src/main/kotlin/` | 앱 본체: WebView, 차량 신호 전달(VehicleHub), 음성 안내·인식(VoiceIO) |
 | `app/src/pleos/` | Pleos Vehicle SDK 2.3.2, NaviHelper 3.0.5, TextToSpeech 3.3.1 연결 |
 | `app/src/nopleos/` | SDK 없이 빌드할 때 쓰는 빈 구현 |
-| `tools/cases.js` | 전체 경우 자동 테스트 51개 (Playwright) |
+| `tools/cases.js` | 전체 경우 자동 테스트 63개 (Playwright) |
 | `tools/ab.js` | 화면 대안 비교(주문 단계, 증상 기록 시점, 음성 찾기 위치) 자동 측정 |
+| `tools/ab2.js` | 이전 첫 화면 대 투시 렌즈 첫 화면 자동 측정 (결과: `docs/ab-test-2.md`) |
+| `tools/persona2.js` | Pleos Connect 적용 차종(그랜저·아반떼·투싼)별 운전자 조건 A/B 자동 측정 (결과: `docs/ab-test-3-vehicle-personas.md`, 실제 사용자 실험 아님) |
 | `tools/persona.js` | 사용자 유형 5가지 조건별 기존안·개선안 자동 측정 (결과: `docs/persona-test.md`, 실제 사용자 실험 아님) |
 | `docs/design-decisions.md` | 개발 전 조사와 화면 설계 결정 |
 

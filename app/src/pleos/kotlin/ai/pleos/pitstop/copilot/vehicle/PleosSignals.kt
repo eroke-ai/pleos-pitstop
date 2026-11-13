@@ -140,7 +140,7 @@ class PleosSignals(context: Context) {
 
     private fun setVin(v: String?) {
         val clean = v?.trim()?.trim('"')
-        if (clean.isNullOrBlank() || clean.equals("invalid", true) || clean.length < 11) { Log.i(TAG, "VIN unavailable: $v"); return }
+        if (clean.isNullOrBlank() || clean.equals("invalid", true) || clean.length < 11) { Log.i(TAG, "VIN unavailable (len=${clean?.length ?: 0})"); return }
         vin = clean; onChange()
     }
 

@@ -280,3 +280,22 @@ button:active{filter:brightness(1.25)}.a-btn:active,.btn:active,.tab:active,.a-r
 .night .a-peekname{background:#2a2c33;color:#fff}
 .a-srch .mic{height:56px}.a-srch{height:64px}.hs{min-height:58px}.crumb button{padding:8px 0}
 .a-srch{flex:none}
+
+/* 차량 이미지 개선: 배경에서 띄우기, 바닥 반사, 렌즈 안 부품 그림 */
+.lens{background:radial-gradient(760px 300px at 37% 60%,#3b3f4a 0%,#1d1f26 46%,#0c0d10 100%)}
+.a-spot{position:absolute;left:80px;top:520px;width:1000px;height:130px;background:radial-gradient(closest-side,rgba(255,255,255,.13),rgba(255,255,255,0));pointer-events:none}
+.a-car{filter:drop-shadow(0 0 1.2px rgba(255,255,255,.55)) drop-shadow(0 26px 22px rgba(0,0,0,.6))}
+.a-refl{position:absolute;pointer-events:none;transform:scaleY(-1);opacity:.22;filter:blur(2px);-webkit-mask-image:linear-gradient(to top,#000 26%,transparent 48%);mask-image:linear-gradient(to top,#000 26%,transparent 48%)}
+.a-lens.art img{opacity:.28;filter:brightness(1.1)}
+.a-lens svg{position:absolute;inset:0;width:100%;height:100%}
+.a-lens.art{background:radial-gradient(circle at 50% 45%,#0d2430 0%,#04090f 78%)}
+.night .lens{background:radial-gradient(760px 300px at 37% 60%,#2a2d36 0%,#14151a 46%,#08090b 100%)}
+/* 누르는 영역 56px 이상(부품 화면의 수량·주문·묶음·마이크·경로) */
+.qty button{width:56px;height:56px;font-size:24px}.qty em{width:26px;font-size:18px}
+.grp{height:56px}
+.srch:not(.a-srch) .mic::after{content:'';position:absolute;inset:-8px -9px}
+.crumb button::after{inset:-14px -10px}
+.pl{position:relative}.pl::after{content:'';position:absolute;inset:-9px 0}
+.pr{padding:3px 12px;margin-bottom:4px}.ex{padding:4px 14px 4px;margin-bottom:4px}
+/* 작은 화면(0.8배)에서도 12px 아래로 내려가지 않게: 가장 작은 글자 15px */
+.pk,.tagz,.ok,.tag,.grp span,.sys span{font-size:15px}

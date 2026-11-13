@@ -27,12 +27,12 @@ class PleosStt(context: Context, private val onHeard: (String) -> Unit, private 
         override fun onReady() { Log.i(TAG, "onReady") }
         override fun onStartedRecognition() { Log.i(TAG, "onStartedRecognition") }
         override fun onEndedRecognition() {
-            Log.i(TAG, "onEndedRecognition partial=$lastPartial")
+            Log.i(TAG, "onEndedRecognition partialLen=${lastPartial?.length ?: 0}")
             // 최종 결과 없이 끝나면 마지막 중간 결과를 쓰고, 그것도 없으면 실패로 본다
             main.postDelayed({ if (active) finish(lastPartial?.takeIf { it.isNotBlank() }, "ended-empty") }, 400)
         }
         override fun onUpdated(p0: String, p1: Boolean) {
-            Log.i(TAG, "onUpdated final=$p1 text=$p0")
+            Log.i(TAG, "onUpdated final=$p1 len=${p0.length}")
             if (p0.isBlank()) return
             if (p1) main.post { finish(p0, null) } else lastPartial = p0
         }

@@ -1,0 +1,452 @@
+[
+ {
+  "id": "G50",
+  "car": "더 뉴 그랜저",
+  "name": "50대 · 정비소에 맡기는 운전자",
+  "cond": "기본 보기, 1600×720",
+  "v": "A",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 155,
+    "minFont": 14,
+    "under12": 0,
+    "scale": 1,
+    "used": 100
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 56,
+    "minFont": 14
+   },
+   "wiper": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 44
+   }
+  }
+ },
+ {
+  "id": "G50",
+  "car": "더 뉴 그랜저",
+  "name": "50대 · 정비소에 맡기는 운전자",
+  "cond": "기본 보기, 1600×720",
+  "v": "B",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 64,
+    "minFont": 15,
+    "under12": 0,
+    "scale": 1,
+    "used": 100
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 56,
+    "minFont": 15
+   },
+   "wiper": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 56
+   }
+  }
+ },
+ {
+  "id": "G60",
+  "car": "더 뉴 그랜저",
+  "name": "60대 · 큰 글자가 필요한 운전자",
+  "cond": "쉬운 보기, 누를 때 20px 빗나감, 1600×720",
+  "v": "A",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 221,
+    "minFont": 15,
+    "under12": 0,
+    "scale": 1,
+    "used": 100
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 56,
+    "minFont": 15
+   },
+   "sym": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 96,
+    "minFont": 15
+   }
+  }
+ },
+ {
+  "id": "G60",
+  "car": "더 뉴 그랜저",
+  "name": "60대 · 큰 글자가 필요한 운전자",
+  "cond": "쉬운 보기, 누를 때 20px 빗나감, 1600×720",
+  "v": "B",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 64,
+    "minFont": 15,
+    "under12": 0,
+    "scale": 1,
+    "used": 100
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 56,
+    "minFont": 15
+   },
+   "sym": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 96,
+    "minFont": 15
+   }
+  }
+ },
+ {
+  "id": "G40",
+  "car": "더 뉴 그랜저",
+  "name": "40대 · 부품 사서 정비소 가는 운전자",
+  "cond": "기본 보기, 1600×720",
+  "v": "A",
+  "tasks": {
+   "mount": {
+    "ok": true,
+    "taps": 8,
+    "miss": 0,
+    "minT": 40,
+    "guide": false
+   },
+   "savepn": {
+    "ok": true,
+    "taps": 5,
+    "miss": 0,
+    "minT": 40
+   },
+   "plug": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 52,
+    "guide": false
+   }
+  }
+ },
+ {
+  "id": "G40",
+  "car": "더 뉴 그랜저",
+  "name": "40대 · 부품 사서 정비소 가는 운전자",
+  "cond": "기본 보기, 1600×720",
+  "v": "B",
+  "tasks": {
+   "mount": {
+    "ok": true,
+    "taps": 3,
+    "miss": 0,
+    "minT": 56,
+    "guide": true
+   },
+   "savepn": {
+    "ok": true,
+    "taps": 3,
+    "miss": 0,
+    "minT": 64
+   },
+   "plug": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 64,
+    "guide": true
+   }
+  }
+ },
+ {
+  "id": "A20",
+  "car": "디 올 뉴 아반떼",
+  "name": "20대 · 첫 차 초보",
+  "cond": "쉬운 보기, 16:9 화면(1920×1080)",
+  "v": "A",
+  "tasks": {
+   "symptom": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 48,
+    "minFont": 16.8,
+    "under12": 0,
+    "scale": 1.2,
+    "used": 80
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 67,
+    "minFont": 18
+   },
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 265,
+    "minFont": 18,
+    "under12": 0,
+    "scale": 1.2,
+    "used": 80
+   }
+  }
+ },
+ {
+  "id": "A20",
+  "car": "디 올 뉴 아반떼",
+  "name": "20대 · 첫 차 초보",
+  "cond": "쉬운 보기, 16:9 화면(1920×1080)",
+  "v": "B",
+  "tasks": {
+   "symptom": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 77,
+    "minFont": 16.8,
+    "under12": 0,
+    "scale": 1.2,
+    "used": 80
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 67,
+    "minFont": 18
+   },
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 77,
+    "minFont": 18,
+    "under12": 0,
+    "scale": 1.2,
+    "used": 80
+   }
+  }
+ },
+ {
+  "id": "A30",
+  "car": "디 올 뉴 아반떼",
+  "name": "30대 · 직접 갈아 끼우는 운전자",
+  "cond": "기본 보기, 16:9 화면(1920×1080)",
+  "v": "A",
+  "tasks": {
+   "savepn": {
+    "ok": true,
+    "taps": 5,
+    "miss": 0,
+    "minT": 48
+   },
+   "wiper": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 53
+   },
+   "cheap": {
+    "ok": false,
+    "note": "기능 없음",
+    "taps": 0
+   }
+  }
+ },
+ {
+  "id": "A30",
+  "car": "디 올 뉴 아반떼",
+  "name": "30대 · 직접 갈아 끼우는 운전자",
+  "cond": "기본 보기, 16:9 화면(1920×1080)",
+  "v": "B",
+  "tasks": {
+   "savepn": {
+    "ok": true,
+    "taps": 3,
+    "miss": 0,
+    "minT": 73
+   },
+   "wiper": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 67
+   },
+   "cheap": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 66,
+    "shown": 1
+   }
+  }
+ },
+ {
+  "id": "T17",
+  "car": "디 올 뉴 투싼",
+  "name": "가족용 SUV 운전자 · 17인치",
+  "cond": "기본 보기, 16:9 화면(1920×1080), 누를 때 20px 빗나감",
+  "v": "A",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 186,
+    "minFont": 16.8,
+    "under12": 0,
+    "scale": 1.2,
+    "used": 80
+   },
+   "wiper": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 53
+   },
+   "sym": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 115,
+    "minFont": 18
+   }
+  }
+ },
+ {
+  "id": "T17",
+  "car": "디 올 뉴 투싼",
+  "name": "가족용 SUV 운전자 · 17인치",
+  "cond": "기본 보기, 16:9 화면(1920×1080), 누를 때 20px 빗나감",
+  "v": "B",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 77,
+    "minFont": 18,
+    "under12": 0,
+    "scale": 1.2,
+    "used": 80
+   },
+   "wiper": {
+    "ok": true,
+    "taps": 4,
+    "miss": 0,
+    "minT": 67
+   },
+   "sym": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 115,
+    "minFont": 18
+   }
+  }
+ },
+ {
+  "id": "T13",
+  "car": "디 올 뉴 투싼",
+  "name": "가족용 SUV 운전자 · 12.9인치",
+  "cond": "기본 보기, 작은 16:9 화면(1280×720으로 가정), 누를 때 20px 빗나감",
+  "v": "A",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 124,
+    "minFont": 11.2,
+    "under12": 3,
+    "scale": 0.8,
+    "used": 80
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 45,
+    "minFont": 11.2
+   },
+   "symptom": {
+    "ok": true,
+    "taps": 3,
+    "miss": 1,
+    "minT": 32,
+    "minFont": 11.2,
+    "under12": 3,
+    "scale": 0.8,
+    "used": 80
+   }
+  }
+ },
+ {
+  "id": "T13",
+  "car": "디 올 뉴 투싼",
+  "name": "가족용 SUV 운전자 · 12.9인치",
+  "cond": "기본 보기, 작은 16:9 화면(1280×720으로 가정), 누를 때 20px 빗나감",
+  "v": "B",
+  "tasks": {
+   "now": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 51,
+    "minFont": 12,
+    "under12": 0,
+    "scale": 0.8,
+    "used": 80
+   },
+   "bh": {
+    "ok": true,
+    "taps": 2,
+    "miss": 0,
+    "minT": 45,
+    "minFont": 12
+   },
+   "symptom": {
+    "ok": true,
+    "taps": 1,
+    "miss": 0,
+    "minT": 51,
+    "minFont": 12,
+    "under12": 0,
+    "scale": 0.8,
+    "used": 80
+   }
+  }
+ }
+]

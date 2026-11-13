@@ -17,7 +17,8 @@ const BRAND = `<button class="brand" id="brand"><svg width="30" height="30" view
 const KEY = 'pitstop.v1';
 function freshState() {
   return {
-    veh: { gear: 'P', speed: 0, odo: 68402, brake: false, temp: null, vin: 'KMHL141CBTA001234', warn: { engineOil: false, brakeFluid: false, washer: false, tire: false }, src: {} }, // 시연용 예시 값(실제 차량 아님): vin
+    // vin 은 시연용 예시 값(실제 차량 아님)
+    veh: { gear: 'P', speed: 0, odo: 68402, brake: false, temp: null, vin: 'KMHL141CBTA001234', warn: { engineOil: false, brakeFluid: false, washer: false, tire: false }, src: {} },
     cart: {}, hist: JSON.parse(JSON.stringify(SEED_HISTORY)), sym: JSON.parse(JSON.stringify(SEED_SYMPTOMS)),
     order: null, visit: null, saved: [], easy: false,
   };
@@ -38,7 +39,7 @@ addEventListener('resize', fit); fit();
 if (N && N.lowEffects && N.lowEffects()) document.body.classList.add('lowfx');
 // 이미지 미리 풀어 두기: 화면 밖에 붙여 둬서 첫 전환 때 빈 화면이 보이지 않게 한다
 (() => { const keep = document.createElement('div'); keep.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:.01;pointer-events:none';
-  ['side_xray', 'xray_zoom', 'engine_x', 'side_real', 'drive_bg', 'xray_front', 'parts', 'front_xray'].forEach(n => { const i = new Image(); i.src = `img/${n}.webp`; i.style.width = '1px'; if (i.decode) i.decode().catch(() => {}); keep.appendChild(i); });
+  ['side_xray2', 'xray_zoom2', 'engine_x', 'side_real', 'side_real2', 'drive_bg', 'xray_front', 'parts', 'front_xray'].forEach(n => { const i = new Image(); i.src = `img/${n}.webp`; i.style.width = '1px'; if (i.decode) i.decode().catch(() => {}); keep.appendChild(i); });
   document.body.appendChild(keep); })();
 
 /* ---------------- 네이티브 연결 ---------------- */
@@ -150,7 +151,7 @@ const topParts = (q = '', note = '화면 시안 · 모비스 WPC 연계 가정 �
  <button class="cart" id="cartb">장바구니 ${cartCount()}</button>${S.saved.length ? `<button class="cart sv" id="savedb">저장한 품번 ${S.saved.length}</button>` : ''}<button class="navb" data-go="history">정비 이력</button>${INFO}</div>`;
 const miniCar = (zone) => {
   const box = { en: [96, 24, 40, 30], ex: [52, 10, 50, 30], in: [50, 14, 46, 30], ch: [20, 36, 110, 26], lp: [4, 18, 132, 24] }[zone] || [0, 0, 0, 0];
-  return `<button class="card" data-go="home" style="padding:6px;width:150px"><img src="img/side_xray.webp" style="width:138px;display:block"><div style="position:absolute;left:${box[0] + 6}px;top:${box[1] + 6}px;width:${box[2]}px;height:${box[3]}px;border:2px solid #fb923c;border-radius:6px"></div></button>`;
+  return `<button class="card" data-go="home" style="padding:6px;width:150px"><img src="img/side_xray2.webp" style="width:138px;display:block"><div style="position:absolute;left:${box[0] + 6}px;top:${box[1] + 6}px;width:${box[2]}px;height:${box[3]}px;border:2px solid #fb923c;border-radius:6px"></div></button>`;
 };
 const pinHtml = (x, y, c, blink) => `<div class="pin${blink ? ' blink' : ''}" style="left:${x}px;top:${y}px"><div class="g" style="background:${c}"></div><div class="r" style="border-color:${c}"></div><div class="c" style="background:${c}"></div></div>`;
 
@@ -225,7 +226,7 @@ function openInfo() {
 /* ---------------- 01 시작 ---------------- */
 const SCREENS = {}, BIND = {};
 SCREENS.splash = () => `<div style="position:absolute;inset:0;background:radial-gradient(900px 500px at 50% 45%,#0b2539 0%,#050a12 70%)"></div>
- <img src="img/side_xray.webp" style="position:absolute;left:330px;top:250px;width:940px;opacity:.16">
+ <img src="img/side_xray2.webp" style="position:absolute;left:330px;top:250px;width:940px;opacity:.16">
  <div style="position:absolute;left:0;right:0;top:140px;display:flex;justify-content:center;align-items:center;gap:40px">
   <svg width="190" height="190" viewBox="0 0 200 200" style="filter:drop-shadow(0 0 26px rgba(251,146,60,.45))"><path d="M100,8 C146,8 176,40 176,82 C176,128 124,166 100,192 C76,166 24,128 24,82 C24,40 54,8 100,8 Z" fill="#fb923c"/><path d="M100,44 L136,64 L136,104 L100,124 L64,104 L64,64 Z" fill="#081521"/><circle cx="100" cy="84" r="18" fill="#fb923c"/></svg>
   <div><div style="letter-spacing:12px;color:#fdba74;font-size:24px;font-weight:500">PLEOS</div>
@@ -268,8 +269,19 @@ const HOT = [
   { box: [50, 40, 57, 48], zone: 'ex', sys: '사이드미러', part: 'mirror_cover_l' },
 ];
 const hotAt = (x, y) => HOT.find(h => x >= h.box[0] && x <= h.box[2] && y >= h.box[1] && y <= h.box[3]);
-function lensAt(x, y, r, cls) {
-  return `<div class="a-lens ${cls}" style="left:${x - r}px;top:${y - r}px;width:${2 * r}px;height:${2 * r}px"><img src="img/side_xray.webp" style="left:${G.L - (x - r) - 3}px;top:${G.T - (y - r) - 3}px;width:${G.W}px"></div>`;
+// 렌즈 안 그림: 그 자리에 실제로 들어 있는 부품을 보여 준다(겉모습에 색만 입힌 그림이 아니라).
+const C1 = '#8fe9f7', C2 = 'rgba(143,233,247,.45)', HI = '#ffb15c';
+const LENS_ART = {
+  oil: `<image href="img/engine_x.webp" x="-35" y="-10.4" width="170" height="120.9"/><circle cx="75" cy="70.5" r="11.5" fill="none" stroke="${HI}" stroke-width="1.6" stroke-dasharray="3 2.4"/>`,
+  washer: `<path d="M30 34h30l10 10v30a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V40a6 6 0 0 1 6-6z" fill="rgba(143,233,247,.10)" stroke="${C1}" stroke-width="2"/><path d="M25 62h44v12a5 5 0 0 1-5 5H30a5 5 0 0 1-5-5z" fill="${HI}" opacity=".85"/><rect x="36" y="24" width="16" height="10" rx="2" fill="#12202a" stroke="${C1}" stroke-width="2"/><path d="M70 50c8 0 12 4 12 12v14" fill="none" stroke="${C2}" stroke-width="2"/><path d="M31 56h34M31 48h34" stroke="${C2}" stroke-width="1.2" stroke-dasharray="2 3"/>`,
+  wiper: `<path d="M4 70 Q50 52 96 60" fill="none" stroke="${C2}" stroke-width="2"/><path d="M8 82 Q50 66 94 72" fill="none" stroke="${C2}" stroke-width="1.4"/><circle cx="24" cy="74" r="5" fill="#12202a" stroke="${C1}" stroke-width="2"/><path d="M24 74 L70 34" stroke="${C1}" stroke-width="3.2" stroke-linecap="round"/><path d="M44 22 L90 44" stroke="${HI}" stroke-width="5.5" stroke-linecap="round"/><path d="M44 22 L90 44" stroke="#3a2410" stroke-width="1.4" stroke-linecap="round" transform="translate(-1.2 2.6)"/><circle cx="70" cy="34" r="2.6" fill="${C1}"/>`,
+  cabin: `<path d="M18 40 L70 28 L86 44 L34 58z" fill="#f4f1e8" stroke="${HI}" stroke-width="2.4" stroke-linejoin="round"/><g stroke="#b9b3a2" stroke-width="1.5">${[0,1,2,3,4,5,6,7,8].map(i => `<path d="M${23.5 + i * 5.6} ${38.8 - i * 1.3} L${39.5 + i * 5.6} ${56.5 - i * 1.5}"/>`).join('')}</g><path d="M34 58 L86 44 V54 L34 68z" fill="#2a3138" stroke="${HI}" stroke-width="2" stroke-linejoin="round"/><path d="M18 40 V50 L34 68 V58z" fill="#3a434c" stroke="${HI}" stroke-width="2" stroke-linejoin="round"/><path d="M10 20h46M10 84h78" stroke="${C2}" stroke-width="1.4" stroke-dasharray="3 3"/>`,
+  fbrake: `<circle cx="50" cy="52" r="34" fill="rgba(143,233,247,.08)" stroke="${C1}" stroke-width="2.2"/><circle cx="50" cy="52" r="25" fill="none" stroke="${C2}" stroke-width="1.2"/><circle cx="50" cy="52" r="11" fill="#12202a" stroke="${C1}" stroke-width="2"/>${[0,72,144,216,288].map(a => `<circle cx="${50 + 6.5 * Math.cos(a * Math.PI / 180)}" cy="${52 + 6.5 * Math.sin(a * Math.PI / 180)}" r="1.5" fill="${C1}"/>`).join('')}${[20,65,110,155,200,245,290,335].map(a => `<circle cx="${50 + 19 * Math.cos(a * Math.PI / 180)}" cy="${52 + 19 * Math.sin(a * Math.PI / 180)}" r="1.3" fill="${C2}"/>`).join('')}<path d="M66 18 A38 38 0 0 1 88 46 L76 49 A26 26 0 0 0 61 30z" fill="${HI}" stroke="#3a2410" stroke-width="1.2"/><path d="M70 27 A30 30 0 0 1 81 44" fill="none" stroke="#3a2410" stroke-width="1.6"/>`,
+  rtire: `<circle cx="50" cy="52" r="36" fill="#161a1f" stroke="${HI}" stroke-width="2.4"/><circle cx="50" cy="52" r="22" fill="#0b1118" stroke="${C1}" stroke-width="2"/>${Array.from({ length: 18 }, (_, i) => { const a = i * 20 * Math.PI / 180; return `<path d="M${50 + 25 * Math.cos(a)} ${52 + 25 * Math.sin(a)} L${50 + 34 * Math.cos(a + .12)} ${52 + 34 * Math.sin(a + .12)}" stroke="${HI}" stroke-width="2.2" opacity=".8"/>`; }).join('')}${[0,60,120,180,240,300].map(a => `<path d="M50 52 L${50 + 21 * Math.cos(a * Math.PI / 180)} ${52 + 21 * Math.sin(a * Math.PI / 180)}" stroke="${C2}" stroke-width="2.4"/>`).join('')}<circle cx="50" cy="52" r="5" fill="#12202a" stroke="${C1}" stroke-width="1.6"/>`,
+};
+function lensAt(x, y, r, cls, art) {
+  const a = LENS_ART[art];
+  return `<div class="a-lens ${cls}${a ? ' art' : ''}" style="left:${x - r}px;top:${y - r}px;width:${2 * r}px;height:${2 * r}px"><img src="img/side_xray2.webp" style="left:${G.L - (x - r) - 3}px;top:${G.T - (y - r) - 3}px;width:${G.W}px">${a ? `<svg viewBox="0 0 100 100">${a}</svg>` : ''}</div>`;
 }
 function zoomInto(el, then, at) {
   const scr = document.querySelector('.lens'), K = window.__slow || 1; if (!scr) return then();
@@ -277,7 +289,7 @@ function zoomInto(el, then, at) {
   if (at) [cx, cy] = at; else if (it) [cx, cy] = gpx(SPOTS[it.spot]); else [cx, cy] = gpx(ZONE_FOCUS[el.dataset.zone] || [50, 50]);
   scr.querySelectorAll('.a-panel,.a-dock,.a-filt,.a-call,.a-svg,.a-read,.a-ok,.a-lens,.a-hit').forEach(x => { x.style.transition = 'opacity .14s'; x.style.opacity = 0; });
   const car = scr.querySelector('.a-car'), ox = cx - G.L, oy = cy - G.T;
-  const ov = document.createElement('div'); ov.className = 'a-reveal'; ov.innerHTML = `<img src="img/side_xray.webp" style="left:${G.L}px;top:${G.T}px;width:${G.W}px">`;
+  const ov = document.createElement('div'); ov.className = 'a-reveal'; ov.innerHTML = `<img src="img/side_xray2.webp" style="left:${G.L}px;top:${G.T}px;width:${G.W}px">`;
   ov.style.clipPath = `circle(60px at ${cx}px ${cy}px)`; scr.appendChild(ov);
   const ring = document.createElement('div'); ring.className = 'a-ring'; ring.style.left = cx + 'px'; ring.style.top = cy + 'px'; scr.appendChild(ring);
   void ov.offsetWidth;
@@ -295,7 +307,7 @@ SCREENS.home = () => {
     const P = CALL_UP[it.id] || CALL_DOWN[it.id], up = !!CALL_UP[it.id], r = isTop ? 96 : 46;
     const ly = up ? P[1] + (isTop ? 78 : 62) : P[1] - 6, lx = P[0] + 14, ey = up ? y - r : y + r;
     lines += `<path d="M${lx},${ly} L${lx},${up ? ly + 14 : ly - 14} L${x},${ey}" class="a-line ${tone(s.l)}${isTop ? ' main' : ''}"/>`;
-    h += lensAt(x, y, r, tone(s.l) + (isTop ? ' main' : ''));
+    h += lensAt(x, y, r, tone(s.l) + (isTop ? ' main' : ''), it.id);
     h += `<button class="a-call ${tone(s.l)}${isTop ? ' main' : ''}" style="left:${P[0]}px;top:${P[1]}px" ${go(it)}><b>${s.l === 'r' ? s.lab : it.label}</b><span>${s.tag}${it.interval && s.l !== 'r' && lastOf(it.lastPart) ? ` · ${km(S.veh.odo - lastOf(it.lastPart).km)} 주행` : ''}</span></button>`;
   });
   const bhItem = (list.find(x => x.s.l === 'r' && x.it.id !== 'washer') || {}).it;
@@ -313,7 +325,7 @@ SCREENS.home = () => {
     <div class="a-acts">${ord ? '<button class="a-btn" id="ordview">주문 내역</button>' : ''}${ord && !vis ? '<button class="a-btn p" id="ordway">경유지 넣기</button>' : ''}</div></div>`;
   return `<div class="lens"><div class="top a-top">${BRAND}${gearChip()}<span class="chip">${CAR.name}</span><span class="chip">${km(S.veh.odo)}</span><button class="cart" id="cartb"${cartCount() ? '' : ' hidden'}>장바구니 ${cartCount()}</button><button class="navb" data-go="history">정비 이력</button><button class="navb" id="easy" role="switch" aria-checked="${!!S.easy}">쉬운 보기<span class="sw${S.easy ? ' on' : ''}"><i></i></span></button>${INFO}</div>
   <div class="a-floor"></div>
-  <img class="a-car" src="img/side_real.webp" style="left:${G.L}px;top:${G.T}px;width:${G.W}px">
+  <div class="a-spot"></div><img class="a-refl" src="img/side_real2.webp" style="left:${G.L}px;top:${G.T + G.H * 0.41}px;width:${G.W}px"><img class="a-car" src="img/side_real2.webp" style="left:${G.L}px;top:${G.T}px;width:${G.W}px">
   <div class="a-hit" id="carhit" style="left:${G.L}px;top:${G.T}px;width:${G.W}px;height:${G.H}px"></div>
   <svg class="a-svg" width="1600" height="720">${lines}</svg>${h}
   <div class="a-dock"><div class="srch a-srch" id="srchbox"><span class="a-mag">🔍</span><input id="q" placeholder="부품 이름 · 품번 · 증상으로 찾기" value=""><button class="mic" id="vsearch">🎙 말하기</button></div>
@@ -400,10 +412,10 @@ SCREENS.zone = r => {
   const z = r.zone, sl = sysList(z), names = Object.keys(sl), total = PARTS.filter(p => p.zone === z).length;
   let pic = '', hs = '';
   if (z === 'en') {
-    pic = `<img src="img/xray_zoom.webp" style="position:absolute;left:60px;top:120px;width:1064px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 92%,transparent);filter:drop-shadow(0 0 24px rgba(34,211,238,.25))">`;
+    pic = `<img src="img/xray_zoom2.webp" style="position:absolute;left:60px;top:120px;width:1064px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 92%,transparent);filter:drop-shadow(0 0 24px rgba(34,211,238,.25))">`;
     hs = names.filter(n => ENGINE_SYS_SPOTS[n]).map(n => { const [x, y] = ENGINE_SYS_SPOTS[n], l = sysLevel(z, n); return `<button class="hs" style="left:${60 + x / 100 * 1064}px;top:${120 + y / 100 * 722}px" data-go="sys" data-zone="${z}" data-sys="${n}"><i class="${l === 'r' ? 'r' : l === 'o' || l === 'y' ? '' : 'c'}"></i><span>${n} <em>${sl[n].length}</em></span></button>`; }).join('');
   } else {
-    pic = `<img src="img/side_xray.webp" style="position:absolute;left:100px;top:150px;width:1000px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">`;
+    pic = `<img src="img/side_xray2.webp" style="position:absolute;left:100px;top:150px;width:1000px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">`;
     const used = [];
     hs = names.map(n => {
       const sp = sl[n].map(p => SPOTS[p.spot]); let x = sp.reduce((a, s) => a + s[0], 0) / sp.length, y = sp.reduce((a, s) => a + s[1], 0) / sp.length;
@@ -443,10 +455,10 @@ SCREENS.sys = r => {
      ${parts.map(p => { const d = OIL_DIAGRAM[p.id]; return `<button class="pl${p.id === sel.id ? ' on' : ''}" style="left:${d[2]}px;top:${d[3]}px" data-pick="${p.id}"><b>${p.step}</b>${lab[p.id]}${d[4] ? ` <em>${d[4]}</em>` : ''}</button>`; }).join('')}
      <div style="position:absolute;left:24px;bottom:16px;display:flex;gap:8px;align-items:center;font-size:15px;color:#9fb0c2"><span style="color:#e6f0fa;font-weight:700;margin-right:4px">교환 순서</span>①&nbsp;플러그 풀고 오일 빼기 <span style="color:#56687c">›</span> ②&nbsp;와셔 교체 <span style="color:#56687c">›</span> ③&nbsp;필터 교체 <span style="color:#56687c">›</span> ④&nbsp;새 오일 넣기</div>`;
   } else if (sel.multi || sel.pos) {
-    center = `<img src="img/side_xray.webp" style="position:absolute;left:60px;top:200px;width:860px;opacity:.16">${topView(sel, parts)}`;
+    center = `<img src="img/side_xray2.webp" style="position:absolute;left:60px;top:200px;width:860px;opacity:.16">${topView(sel, parts)}`;
   } else {
     const [x, y] = SPOTS[sel.spot];
-    center = `<img src="img/side_xray.webp" style="position:absolute;left:60px;top:200px;width:860px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">
+    center = `<img src="img/side_xray2.webp" style="position:absolute;left:60px;top:200px;width:860px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">
      ${pinHtml(60 + x / 100 * 860, 200 + y / 100 * 471, '#fb923c', true)}
      <div class="label L-o" style="left:${Math.min(60 + x / 100 * 860 - 60, 700)}px;top:${200 + y / 100 * 471 - 70}px">${sel.name}</div>
      <div style="position:absolute;left:24px;bottom:18px;font-size:15px;color:#9fb0c2">위치: ${zoneName(z)} › ${sys}${sel.self ? ' · <span style="color:#6ee7a0">셀프 교체 가능</span>' : ' · 정비소 교체 권장'}</div>`;
@@ -483,7 +495,7 @@ SCREENS.sys = r => {
   <div style="position:absolute;left:20px;right:20px;bottom:14px;display:flex;align-items:center;gap:14px;height:60px;padding:0 8px 0 20px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)">
    <div style="flex:1"><div style="font-size:16px"><b>${cnt}개 · ${won(cartTotal())}</b></div><div class="sm mu">${DEALERS[0].name} · 오늘 방문 수령</div></div>
    <button class="ob" style="height:44px;padding:0 18px" id="sendpn">품번 목록 보내기</button>
-   <button class="btn p" style="width:170px;height:44px" id="order">주문하기</button></div>
+   <button class="btn p" style="width:180px;height:58px;font-size:18px" id="order">주문하기</button></div>
  </div>`;
 };
 const qtyCtl = (id, q) => `<div class="qty"><button data-dec="${id}">−</button><em>${q}</em><button data-inc="${id}">+</button></div>`;
@@ -532,7 +544,7 @@ SCREENS.search = r => {
   if (sel) {
     const [x, y] = SPOTS[sel.spot], px = 300 + x / 100 * 900, py = 110 + y / 100 * 493, last = lastOf(sel.id), d0 = DEALERS[0];
     center = `<div style="position:absolute;left:380px;top:70px;display:flex;gap:8px;z-index:4">${ZONES.map(o => `<button class="zone${o.id === sel.zone ? ' on' : ''}" data-go="zone" data-zone="${o.id}">${o.name}</button>`).join('')}</div>
-     <img src="img/side_xray.webp" style="position:absolute;left:300px;top:110px;width:900px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">
+     <img src="img/side_xray2.webp" style="position:absolute;left:300px;top:110px;width:900px;filter:drop-shadow(0 0 18px rgba(34,211,238,.25))">
      ${pinHtml(px, py, '#fb923c', true)}<div class="label L-o" style="left:${Math.min(px - 80, 1000)}px;top:${py - 76}px">${sel.name}</div>`;
     side = `<div class="side" style="width:400px;left:1200px;padding:20px 22px"><div class="mu sm">${zoneName(sel.zone)} › ${sel.sys}</div>
      <div class="h" style="font-size:22px;margin-top:4px">${sel.name}</div><div class="ok" style="margin-top:6px">✔ 내 차 적용 (차대번호 기준)</div>
@@ -546,7 +558,7 @@ SCREENS.search = r => {
      <div class="card" style="margin-top:10px;font-size:15px"><span class="mu sm">이전 교체</span> &nbsp;${last ? `${last.date} · ${km(last.km)}` : '없음'}</div>
      <div style="position:absolute;left:22px;right:22px;bottom:18px;display:flex;gap:10px"><button class="btn s" style="flex:1;font-size:16px" data-go="sys" data-zone="${sel.zone}" data-sys="${sel.sys}" data-grp="${sel.grp}" data-part="${sel.id}">부품 그림 보기</button><button class="btn p" style="flex:1;font-size:16px" data-add="${sel.id}">${S.cart[sel.id] ? `담김 ${S.cart[sel.id]}` : sel.packs ? `${pack0(sel)}개 담기` : '담기'}</button></div></div>`;
   } else { const again = ['cabin_filter', 'wiper_d', 'engine_oil', 'battery'].map(partById);
-    center = `<img src="img/side_xray.webp" style="position:absolute;left:300px;top:110px;width:900px;opacity:.25">
+    center = `<img src="img/side_xray2.webp" style="position:absolute;left:300px;top:110px;width:900px;opacity:.25">
      <div class="nores"><div class="h" style="font-size:26px">‘${esc(r.q || '')}’(으)로는 찾지 못했어요</div>
       <div style="font-size:17px;margin-top:8px;color:#c7d3e0">다른 이름이나 증상으로 찾아보세요. 예: 깜빡이, 백미러, 방지턱 넘을 때 소리</div>
       <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap"><button class="btn p" id="nomic" style="font-size:17px;padding:0 22px">🎙 말로 다시 찾기</button><button class="btn s" data-go="home" style="font-size:17px;padding:0 22px">차 그림에서 찾기</button></div>
@@ -688,7 +700,7 @@ function departed() {
 SCREENS.work = () => {
   const o = S.order, sym = S.sym, v = S.veh, vin = v.vin ? v.vin.slice(0, 3) + '········' + v.vin.slice(-4) : '등록 안 됨';
   const slow = sym.length && sym.every(s => s.speed <= 20), brk = sym.length && sym.every(s => s.brake !== '안 밟음');
-  return `<div style="position:absolute;left:0;top:0;bottom:0;width:640px;border-right:1px solid var(--ln)"><img src="img/side_real.webp" style="position:absolute;left:-40px;top:200px;width:720px;opacity:.95"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,13,.2),rgba(5,8,13,.85))"></div>
+  return `<div style="position:absolute;left:0;top:0;bottom:0;width:640px;border-right:1px solid var(--ln)"><img src="img/side_real2.webp" style="position:absolute;left:-40px;top:200px;width:720px;opacity:.95"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,13,.2),rgba(5,8,13,.85))"></div>
    <div style="position:absolute;left:22px;top:22px">${BRAND}</div>
    <div class="card" style="position:absolute;left:40px;right:40px;bottom:40px;border-color:#fb923c"><div class="mu sm">경유지 도착</div><div style="font-size:26px;font-weight:700;margin-top:4px">${esc(S.visit ? S.visit.shop : '정비소')}</div>${S.visit && S.visit.slot ? `<div class="sm" style="color:#fdba74;margin-top:4px">예약 ${esc(S.visit.slot)} (예시)</div>` : ''}<div class="mu" style="margin-top:8px;font-size:15px">정비사에게 이 화면을 보여 주세요. 정비 후 출발하면 주행거리가 자동으로 기록됩니다.</div></div></div>
   <div style="position:absolute;left:640px;right:0;top:0;bottom:0;padding:22px 30px">

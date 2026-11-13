@@ -1,0 +1,50 @@
+{
+ "A": {
+  "touchFind": {
+   "taps": 4,
+   "ok": true
+  },
+  "typeFind": {
+   "taps": 2,
+   "ok": true
+  },
+  "plug4": {
+   "taps": 4,
+   "ok": true,
+   "hint": false
+  },
+  "savePn": {
+   "taps": 2,
+   "ok": true
+  },
+  "afterOrder": {
+   "shown": false,
+   "cartLeft": 3
+  },
+  "zoneMs": 245
+ },
+ "B": {
+  "touchFind": {
+   "taps": 2,
+   "ok": true
+  },
+  "typeFind": {
+   "taps": 1,
+   "ok": true
+  },
+  "plug4": {
+   "taps": 1,
+   "ok": true,
+   "hint": true
+  },
+  "savePn": {
+   "taps": 1,
+   "ok": true
+  },
+  "afterOrder": {
+   "shown": true,
+   "cartLeft": 0
+  },
+  "zoneMs": 356
+ }
+}
