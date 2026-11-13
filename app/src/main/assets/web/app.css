@@ -317,3 +317,4 @@ button:active{filter:brightness(1.25)}.a-btn:active,.btn:active,.tab:active,.a-r
 .res{display:flex;align-items:center;gap:10px;text-align:left}.res .rtx{flex:1;min-width:0}
 .rth{width:54px;height:54px;flex:none;border-radius:12px;background:rgba(255,255,255,.05);object-fit:contain}
 .hs.lf{flex-direction:row-reverse;transform:translate(calc(-100% + 12px),-12px)}
+.a-why{text-wrap:balance}

@@ -149,7 +149,7 @@ const cartCount = () => Object.values(S.cart).reduce((a, b) => a + b, 0);
 const cartTotal = () => Object.entries(S.cart).reduce((a, [id, q]) => a + partById(id).price * q, 0);
 const INFO = '<button class="navb info" data-info="1">ⓘ 예시 데이터 안내</button>';
 const gearChip = () => S.veh.gear === 'P' ? '<span class="chip g">P 주차 중</span>' : `<span class="chip d">${S.veh.gear} 주행 중</span>`;
-const topParts = (q = '', note = '화면 시안 · 모비스 WPC 연계 가정 · 품번·가격·재고는 예시') => `<div class="top">${BRAND}<button class="navb back" id="back">‹ 뒤로</button>${gearChip()}
+const topParts = (q = '', note = '시제품 · 모비스 WPC 연계 가정 · 품번·가격·재고는 예시') => `<div class="top">${BRAND}<button class="navb back" id="back">‹ 뒤로</button>${gearChip()}
  <div class="srch${q ? ' on' : ''}" id="srchbox">🔍 <input id="q" placeholder="부품 이름, 품번, 증상으로 검색" value="${esc(q)}"><button class="mic" id="mic">🎙</button></div>
  <button class="cart" id="cartb">장바구니 ${cartCount()}</button>${S.saved.length ? `<button class="cart sv" id="savedb">저장한 품번 ${S.saved.length}</button>` : ''}<button class="navb" data-go="history">정비 이력</button>${INFO}</div>`;
 const miniCar = (zone) => {
@@ -416,7 +416,7 @@ SCREENS.zone = r => {
   let pic = '', hs = '';
   if (z === 'en') {
     // 엔진 그림 위에 계통 자리, 엔진 밖 부품(배터리·냉각수·워셔액)은 옆에 따로
-    const K = 800 / 900, EP = { '엔진오일': [411, 115], '점화': [436, 59], '흡기': [228, 100], '벨트': [222, 330], '마운트(미미)': [181, 163] }, SAT = { '배터리·전기': ['battery', 60, 392, 176], '냉각': ['coolant', 1010, 150, 132], '워셔': ['washer_fluid', 1010, 400, 132] };
+    const K = 800 / 900, EP = { '엔진오일': [411, 119], '점화': [436, 50], '흡기': [228, 94], '벨트': [222, 330], '마운트(미미)': [181, 163] }, SAT = { '배터리·전기': ['battery', 60, 392, 176], '냉각': ['coolant', 1010, 150, 132], '워셔': ['washer_fluid', 1010, 400, 132] };
     pic = `<img src="img/engine_mount.webp" style="position:absolute;left:230px;top:158px;width:800px;height:498px;filter:drop-shadow(0 22px 30px rgba(0,0,0,.6))">` + Object.values(SAT).map(([f, x, y, w]) => `<img src="img/p/${f}.webp" style="position:absolute;left:${x}px;top:${y}px;width:${w}px;filter:drop-shadow(0 12px 16px rgba(0,0,0,.55))">`).join('');
     hs = names.map(n => { const e = EP[n], t = SAT[n]; if (!e && !t) return ''; const x = e ? 230 + e[0] * K : t[1] + t[3] / 2 - 14, y = e ? 158 + e[1] * K : t[2] + t[3] + 14, l = sysLevel(z, n); return `<button class="hs${n === '마운트(미미)' || n === '벨트' || n === '흡기' ? ' lf' : ''}${t ? ' ct' : ''}" style="left:${x}px;top:${y}px" data-go="sys" data-zone="${z}" data-sys="${n}"><i class="${l === 'r' ? 'r' : l === 'o' || l === 'y' ? '' : 'c'}"></i><span>${n} <em>${sl[n].length}</em></span></button>`; }).join('');
   } else {
@@ -572,7 +572,7 @@ SCREENS.search = r => {
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">${again.map(p => `<button class="tab" data-go="search" data-q="${p.name.split(' (')[0]}">${p.name.split(' (')[0]}</button>`).join('')}</div></div>`; }
   return `${topParts(r.q || '', '품번·가격·재고는 예시')}
  <div style="position:absolute;left:24px;top:72px;width:330px;bottom:16px;z-index:4"><div class="crumb">${head}</div>
-  <div class="scroll" style="margin-top:12px;position:absolute;top:24px;bottom:36px;left:0;right:0">${list.map(p => `<button class="res${sel && p.id === sel.id ? ' on' : ''}" data-res="${p.id}">${partImg(p.id) ? `<img class="rth" src="${partImg(p.id)}" alt="">` : '<i class="rth"></i>'}<div class="rtx"><div style="display:flex;justify-content:space-between"><b style="font-size:16px">${p.name}</b><span class="tagz">${zoneName(p.zone)}</span></div><div class="sm mu" style="margin-top:3px">${p.sys}${p.note ? ' · ' + p.note : p.self ? ' · 셀프 가능' : ''} · ${won(p.price)}</div></div></button>`).join('')}</div>
+  <div class="scroll" style="margin-top:12px;position:absolute;top:24px;bottom:36px;left:0;right:0">${list.map(p => `<button class="res${sel && p.id === sel.id ? ' on' : ''}" data-res="${p.id}">${partImg(p.id) ? `<img class="rth" src="${partImg(p.id)}" alt="">` : '<i class="rth"></i>'}<div class="rtx"><div style="display:flex;justify-content:space-between"><b style="font-size:16px">${p.name}</b><span class="tagz">${zoneName(p.zone)}</span></div><div class="sm mu" style="margin-top:3px">${p.sys}${p.note ? ' · ' + p.note : p.self ? ' · 셀프 교체' : ''} · ${won(p.price)}</div></div></button>`).join('')}</div>
   <button class="sm mu" style="position:absolute;bottom:0;padding:21px 0 17px" data-go="home">못 찾으셨나요? 구역에서 찾기 ›</button></div>
  ${center}${side}`;
 };
