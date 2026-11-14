@@ -57,4 +57,4 @@ Pleos Maven 저장소: `https://nexus-playground.pleos.ai/repository/maven-relea
 - 기어·속도: Virtual Console. 에뮬레이터에 없는 신호(소모품 경고 등)는 앱 로고를 세 번 누르면 나오는 시연 패널로 넣습니다.
 
 ## 이미지 안내
-`app/src/main/assets/web/img/`의 차량 이미지는 현대자동차 공식 사진을 가공한 것으로, 공모전 심사용으로만 쓰며 이 저장소에는 넣지 않았습니다. 빌드하려면 `img/README.txt`에 적힌 이름의 이미지를 넣어야 화면에 차가 보입니다(제출 APK에는 포함).
+`app/src/main/assets/web/img/`의 차량 이미지는 현대자동차 공식 사진을 가공한 것으로, 공모전 심사용으로만 쓰며 소스에는 넣지 않았습니다. 심사용 APK(apk/)에는 포함되어 있습니다. 빌드하려면 `img/README.txt`에 적힌 이름의 이미지를 넣어야 화면에 차가 보입니다.
